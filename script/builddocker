@@ -1,0 +1,4 @@
+#!/bin/bash
+VERSION=$1
+docker build -t hub.digi-sky.com/digisky-plat/test:${VERSION} .
+docker push hub.digi-sky.com/digisky-plat/test:${VERSION}

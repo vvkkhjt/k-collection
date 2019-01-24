@@ -1,0 +1,39 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    run: demo
+  name: demo
+  namespace: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: demo
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: demo
+    spec:
+      serviceAccountName: test-view
+      containers:
+        - image: hub.digi-sky.com/digisky-plat/test:4
+          imagePullPolicy: IfNotPresent
+          name: demo
+          resources: {}
+          stdin: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: harbor-ci
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
