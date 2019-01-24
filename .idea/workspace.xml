@@ -1,7 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7731f7be-eb7e-4bd4-ad1a-266b93e48950" name="Default Changelist" comment="" />
+    <list default="true" id="7731f7be-eb7e-4bd4-ad1a-266b93e48950" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app" beforeDir="false" afterPath="$PROJECT_DIR$/app" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/index.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/bypass.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/bypasssafe.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/common.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/config.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/doc.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/dump.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/format.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/davecgh/go-spew/spew/spew.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/hashicorp/golang-lru/2q.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/hashicorp/golang-lru/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/hashicorp/golang-lru/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/hashicorp/golang-lru/arc.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/hashicorp/golang-lru/lru.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/github.com/hashicorp/golang-lru/simplelru/lru.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion/conversion.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion/doc.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion/register.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion/types.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion/zz_generated.conversion.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/internalversion/zz_generated.deepcopy.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/util/cache/cache.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/util/cache/lruexpirecache.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/util/diff/diff.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/util/wait/doc.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/util/wait/wait.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/OWNERS" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/controller.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/delta_fifo.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/doc.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/expiration_cache.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/expiration_cache_fakes.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/fake_custom_store.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/fifo.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/heap.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/index.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/listers.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/listwatch.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/mutation_cache.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/mutation_detector.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/reflector.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/reflector_metrics.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/shared_informer.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/store.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/thread_safe_store.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/cache/undelta_store.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/tools/pager/pager.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/util/buffer/ring_growing.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/util/retry/OWNERS" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/k8s.io/client-go/util/retry/util.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vendor/vendor.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/vendor.json" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -17,11 +72,44 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/index.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="114">
-              <caret line="126" column="24" lean-forward="true" selection-start-line="126" selection-start-column="24" selection-end-line="126" selection-end-column="24" />
+            <state relative-caret-position="190">
+              <caret line="148" column="25" selection-start-line="148" selection-start-column="20" selection-end-line="148" selection-end-column="25" />
               <folding>
-                <element signature="e#660#938#0" expanded="true" />
+                <element signature="e#660#934#0" expanded="true" />
+                <element signature="e#3485#3538#0" />
+                <element signature="e#6273#6440#0" />
+                <element signature="e#7533#7632#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/kubernetes/typed/apps/v1beta1/deployment.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="205">
+              <caret line="90" column="21" selection-start-line="90" selection-start-column="21" selection-end-line="90" selection-end-column="21" />
+              <folding>
+                <element signature="e#630#871#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/rest/request.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="320">
+              <caret line="597" column="22" selection-start-line="597" selection-start-column="22" selection-end-line="597" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/watch/streamwatcher.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="309">
+              <caret line="57" column="14" selection-start-line="57" selection-start-column="8" selection-end-line="57" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -46,7 +134,6 @@
       <find>Watch</find>
       <find>Getter</find>
       <find>go-client</find>
-      <find>ResultChan</find>
       <find>appsV1beta1</find>
       <find>GetRateLimiter</find>
       <find>restClient</find>
@@ -54,12 +141,19 @@
       <find>RESTClient</find>
       <find>Deployments</find>
       <find>Clientset</find>
+      <find>me</find>
+      <find>metrics</find>
+      <find>Event</find>
+      <find>ResultChan</find>
     </findStrings>
     <replaceStrings>
       <replace>nname</replace>
     </replaceStrings>
   </component>
   <component name="GOROOT" path="C:\Go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="GoLibraries">
     <option name="urls">
       <list>
@@ -85,9 +179,9 @@
         <option value="$PROJECT_DIR$/index1.go" />
         <option value="$PROJECT_DIR$/demo/interface.go" />
         <option value="$PROJECT_DIR$/interface.go" />
-        <option value="$PROJECT_DIR$/index.go" />
         <option value="$PROJECT_DIR$/pointer.go" />
         <option value="$PROJECT_DIR$/channel.go" />
+        <option value="$PROJECT_DIR$/index.go" />
       </list>
     </option>
   </component>
@@ -97,6 +191,7 @@
     <option name="width" value="1294" />
     <option name="height" value="1047" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -108,6 +203,10 @@
             <path>
               <item name="aranya" type="b2602c69:ProjectViewProjectNode" />
               <item name="aranya" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="aranya" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
           <select />
@@ -131,6 +230,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../demo" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="http.proxy" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
@@ -152,32 +252,20 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Go Build.Channel">
-    <configuration name="Channel" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <component name="RunManager">
+    <configuration name="index" type="GoApplicationRunConfiguration" factoryName="Go Application">
       <module name="go" />
       <working_directory value="$PROJECT_DIR$" />
       <go_parameters value="-i" />
+      <envs>
+        <env name="SITE_URL" value="http://140.143.83.18/cluster" />
+      </envs>
       <kind value="FILE" />
-      <filePath value="$PROJECT_DIR$/channel.go" />
+      <filePath value="$PROJECT_DIR$/index.go" />
       <package value="aranya" />
       <directory value="$PROJECT_DIR$" />
       <method v="2" />
     </configuration>
-    <configuration name="Unnamed" type="GoApplicationRunConfiguration" factoryName="Go Application">
-      <module name="go" />
-      <working_directory value="$PROJECT_DIR$" />
-      <envs>
-        <env name="SITE_URL" value="http://192.168.104.97:9600/kubernetes/get_k8s_info/" />
-      </envs>
-      <kind value="FILE" />
-      <filePath value="F:\go\src\aranya\index.go" />
-      <directory value="$PROJECT_DIR$" />
-      <method v="2" />
-    </configuration>
-    <list>
-      <item itemvalue="Go Build.Unnamed" />
-      <item itemvalue="Go Build.Channel" />
-    </list>
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -226,13 +314,13 @@
       <window_info anchor="bottom" id="Cvs" order="3" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="4" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="5" weight="0.32932165" />
-      <window_info anchor="bottom" id="Version Control" order="6" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49918962" visible="true" weight="0.33041576" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49918962" visible="true" weight="0.35158816" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5008104" side_tool="true" weight="0.32968238" />
       <window_info anchor="bottom" id="Messages" order="10" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Run" order="12" sideWeight="0.49918962" weight="0.3107221" />
+      <window_info anchor="bottom" id="Run" order="12" sideWeight="0.49918962" weight="0.33077765" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -250,52 +338,10 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/Go/src/io/ioutil/ioutil.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="20" column="15" selection-start-line="20" selection-start-column="15" selection-end-line="20" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/src/net/url/url.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="21" column="5" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/watch/filter.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="60" lean-forward="true" selection-start-line="60" selection-end-line="60" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/src/time/sleep.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="7" column="31" lean-forward="true" selection-start-line="7" selection-start-column="31" selection-end-line="7" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/src/time/time.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="630" column="5" selection-start-line="630" selection-start-column="5" selection-end-line="630" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/kubernetes/typed/settings/v1alpha1/settings_client.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="194">
           <caret line="34" column="25" selection-start-line="34" selection-start-column="25" selection-end-line="34" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/v1/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="318" column="5" selection-start-line="318" selection-start-column="5" selection-end-line="318" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -445,31 +491,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/runtime/schema/interfaces.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
-          <caret line="24" column="36" lean-forward="true" selection-start-line="24" selection-start-column="36" selection-end-line="24" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/demo.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="99">
           <caret line="17" column="11" selection-start-line="17" selection-start-column="11" selection-end-line="17" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/runtime/interfaces.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="87">
-          <caret line="224" column="1" lean-forward="true" selection-start-line="224" selection-start-column="1" selection-end-line="224" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/watch/watch.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="61" column="21" lean-forward="true" selection-start-line="61" selection-start-column="21" selection-end-line="61" selection-end-column="21" />
         </state>
       </provider>
     </entry>
@@ -515,13 +540,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/rest/request.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="134" column="5" lean-forward="true" selection-start-line="134" selection-start-column="5" selection-end-line="134" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/rest/client.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="297">
@@ -550,16 +568,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/kubernetes/typed/apps/v1beta1/deployment.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="449">
-          <caret line="45" column="9" selection-start-line="45" selection-start-column="9" selection-end-line="45" selection-end-column="9" />
-          <folding>
-            <element signature="e#630#871#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/kubernetes/clientset.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="259">
@@ -570,20 +578,109 @@
     <entry file="file://$PROJECT_DIR$/pointer.go" />
     <entry file="file://$PROJECT_DIR$/interface.go" />
     <entry file="file://$PROJECT_DIR$/demo/interface.go" />
+    <entry file="file://$PROJECT_DIR$/channel.go" />
     <entry file="file://$PROJECT_DIR$/vendor/vendor.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="95">
-          <caret line="5" column="25" selection-start-line="5" selection-start-column="25" selection-end-line="5" selection-end-column="25" />
+        <state relative-caret-position="174">
+          <caret line="950" column="34" selection-start-line="950" selection-start-column="34" selection-end-line="950" selection-end-column="34" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/channel.go" />
+    <entry file="file://C:/Go/src/time/time.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="243">
+          <caret line="654" column="38" lean-forward="true" selection-start-line="654" selection-start-column="38" selection-end-line="654" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/sirupsen/logrus/exported.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="101" column="5" selection-start-line="101" selection-start-column="5" selection-end-line="101" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/runtime/schema/interfaces.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="21" column="5" selection-start-line="21" selection-start-column="5" selection-end-line="21" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/github.com/sirupsen/logrus/terminal_windows.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="4" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/rest/request.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="597" column="22" selection-start-line="597" selection-start-column="22" selection-end-line="597" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/apis/meta/v1/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-725">
+          <caret line="93" column="5" selection-start-line="93" selection-start-column="5" selection-end-line="93" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/api/apps/v1beta1/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="297" column="17" selection-start-line="297" selection-start-column="17" selection-end-line="297" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/kubernetes/typed/apps/v1beta1/deployment.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="90" column="21" selection-start-line="90" selection-start-column="21" selection-end-line="90" selection-end-column="21" />
+          <folding>
+            <element signature="e#630#871#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/watch/streamwatcher.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="309">
+          <caret line="57" column="14" selection-start-line="57" selection-start-column="8" selection-end-line="57" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/runtime/interfaces.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="226" column="23" selection-start-line="226" selection-start-column="23" selection-end-line="226" selection-end-column="23" />
+          <folding>
+            <element signature="e#588#658#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/watch/watch.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="61" column="4" selection-start-line="61" selection-start-column="4" selection-end-line="61" selection-end-column="4" />
+          <folding>
+            <element signature="e#586#674#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/index.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="126" column="24" lean-forward="true" selection-start-line="126" selection-start-column="24" selection-end-line="126" selection-end-column="24" />
+        <state relative-caret-position="190">
+          <caret line="148" column="25" selection-start-line="148" selection-start-column="20" selection-end-line="148" selection-end-column="25" />
           <folding>
-            <element signature="e#660#938#0" expanded="true" />
+            <element signature="e#660#934#0" expanded="true" />
+            <element signature="e#3485#3538#0" />
+            <element signature="e#6273#6440#0" />
+            <element signature="e#7533#7632#0" />
           </folding>
         </state>
       </provider>
