@@ -17,20 +17,22 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	//"flag"
+	"flag"
+	"github.com/rifflock/lfshook"
+	"path/filepath"
+
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"k8s.io/api/apps/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	//"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 	"net/url"
 	"os"
-	//"path/filepath"
 	"regexp"
 	"time"
 )
@@ -38,13 +40,16 @@ import (
 const(
 	envClusterName = "CLUSTER_NAME"
 	envSiteUrl = "SITE_URL"
+	envRunEnv = "RUN_ENV"
 )
 
 var (
 	clusterName = "default-cluster"
 	siteUrl = "http://140.143.83.18/cluster"
+	runEnv = "DEV"
 	sendChannel = make(chan int)
 	watchChannel = make(chan map[string]interface{},100)
+	Log *logrus.Logger
 )
 
 type Project struct {
@@ -82,44 +87,55 @@ func main() {
 		siteUrl = os.Getenv(envSiteUrl)
 	}
 
+	if re := os.Getenv(envRunEnv);re != ""{
+		runEnv = os.Getenv(envRunEnv)
+	}
+
+	Log = NewLogger()
 	clientSet := initClient()
 
 	//go startWatchDp(clientSet)
 	go getChannel(clientSet)
-	go startWatchDeployment(clientSet)
-	startGetProject()
+	//go startWatchDeployment(clientSet)
+	go startGetProject()
 	select {}
 }
+
+
 // 初始化k8s client
 func initClient() *kubernetes.Clientset {
-	log.Info("初始化client...")
+	Log.Info("初始化client...")
 	// 本地开发
-	//var kubeConfig *string
-	//if home := homeDir(); home != "" {
-	//	kubeConfig = flag.String("kubeConfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeConfig file")
-	//} else {
-	//	kubeConfig = flag.String("kubeConfig", "", "absolute path to the kubeConfig file")
-	//}
-	//flag.Parse()
-	//
-	//config, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
-	//if err != nil {
-	//	panic(err.Error())
-	//}
-
-	// 集群内部署
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		panic("初始化config失败:" + err.Error())
+	var kConfig *rest.Config
+	if runEnv == "DEV"{
+		var kubeConfig *string
+		if home := homeDir(); home != "" {
+			kubeConfig = flag.String("kubeConfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeConfig file")
+		} else {
+			kubeConfig = flag.String("kubeConfig", "", "absolute path to the kubeConfig file")
+		}
+		flag.Parse()
+		config, err := clientcmd.BuildConfigFromFlags("", *kubeConfig)
+		if err != nil {
+			panic(err.Error())
+		}
+		kConfig = config
+	}else {
+		// 集群内部署
+		config, err := rest.InClusterConfig()
+		if err != nil {
+			panic("初始化config失败:" + err.Error())
+		}
+		kConfig = config
 	}
 
 	// 获取client
-	clientSet, err := kubernetes.NewForConfig(config)
+	clientSet, err := kubernetes.NewForConfig(kConfig)
 	if err != nil {
 		panic("获取client失败:" + err.Error())
 	}
 
-	log.Info("初始化client成功...")
+	Log.Info("初始化client成功...")
 
 	return clientSet
 }
@@ -133,7 +149,7 @@ func startWatchDeployment(clientSet *kubernetes.Clientset){
 		}
 	}()
 
-	log.Info("正在监听deployment...")
+	Log.Info("正在监听deployment...")
 	count := 0
 	deploymentsClient := clientSet.AppsV1beta1().Deployments(metav1.NamespaceAll)
 	list,_ := deploymentsClient.List(metav1.ListOptions{})
@@ -141,23 +157,25 @@ func startWatchDeployment(clientSet *kubernetes.Clientset){
 	w, _ := deploymentsClient.Watch(metav1.ListOptions{})
 	for {
 		select {
-		case e, _ := <-w.ResultChan():
-			if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified{
-				if count != len(items){
-					count += 1
-				}else{
-					nname := e.Object.(*v1beta1.Deployment).Namespace
-					if r, _ := regexp.Compile("^(p|u|user)-");nname != "default" && nname != "cattle-system" &&
-						nname != "kube-system" && nname != "dsky-system" &&
-						nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
-						data := make(map[string]interface{},1)
-						data["type"] = e.Type
-						data["name"] = e.Object.(*v1beta1.Deployment).Name
-						data["namespace"] = e.Object.(*v1beta1.Deployment).Namespace
-						watchChannel <- data
+			case e, _ := <-w.ResultChan():
+				Log.Infof("162: %s",e)
+				if e.Type == watch.Added || e.Type == watch.Deleted{
+					if count != len(items){
+						count += 1
+					}else{
+						// go的reflect获取运行时的struct
+						nname := e.Object.(*v1beta1.Deployment).Namespace
+						if r, _ := regexp.Compile("^(p|u|user)-");nname != "default" && nname != "cattle-system" &&
+							nname != "kube-system" && nname != "dsky-system" &&
+							nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
+							data := make(map[string]interface{},1)
+							data["type"] = e.Type
+							data["name"] = e.Object.(*v1beta1.Deployment).Name
+							data["namespace"] = e.Object.(*v1beta1.Deployment).Namespace
+							watchChannel <- data
+						}
 					}
 				}
-			}
 		}
 	}
 }
@@ -194,23 +212,23 @@ func startWatchDeployment(clientSet *kubernetes.Clientset){
 
 // 开始获取project
 func startGetProject(){
-	//defer func() {
-	//	err := recover()
-	//	if err != nil {
-	//		fmt.Println(err)
-	//	}
-	//}()
+	defer func() {
+		err := recover()
+		if err != nil {
+			Log.Error(err)
+		}
+	}()
 
 	// 循环查询项目
-	//for{
+	for{
 		sendChannel <- 1
-		//time.Sleep( 4 * time.Hour)
-	//}
+		time.Sleep( 10 * time.Second)
+	}
 }
 
 // 获取deployment
 func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
-	log.Info("正在获取项目数据...")
+	Log.Info("正在获取项目数据...")
 	var ns []Namespace
 
 	namespaceItems, _ := clientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
@@ -229,7 +247,7 @@ func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
 		var ds []Deployment
 
 		if len(ditems) == 0 {
-			log.Info("no deployment")
+			Log.Info("no deployment")
 		} else {
 			for q := range ditems{
 				o := ditems[q]
@@ -251,7 +269,7 @@ func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
 		//	}
 		//}
 	}
-	log.Info("获取项目数据完成...")
+	Log.Info("获取项目数据完成...")
 	return ns
 }
 
@@ -279,7 +297,7 @@ func formatJson(project *Project) string {
 	//fmt.Println("正在格式化数据...")
 	jsonBytes, err := json.Marshal(project)
 	if err != nil {
-		fmt.Println(err)
+		Log.Error(err)
 	}
 	//fmt.Println("格式化数据完成...")
 	return string(jsonBytes)
@@ -287,7 +305,7 @@ func formatJson(project *Project) string {
 
 // 发送数据
 func httpPostForm(data string) error {
-	log.Info("正在发送数据...")
+	Log.Info("正在发送数据...")
 	resp, err := http.PostForm(siteUrl, url.Values{"data": {data}})
 	if err != nil {
 		return errors.New("链接地址失败..."+err.Error())
@@ -295,13 +313,13 @@ func httpPostForm(data string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == 200{
-		log.Info("数据发送完成...")
+		Log.Info("数据发送完成...")
 	}else{
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			return errors.New("读取数据失败..."+err.Error())
 		}
-		log.Warn("数据发送失败...",string(body))
+		Log.Warn("数据发送失败...",string(body))
 	}
 	return nil
 }
@@ -311,16 +329,16 @@ func getChannel(clientSet *kubernetes.Clientset){
 	for{
 		select {
 			case <-sendChannel:
-				log.Infof("%s Deployment","Init")
+				Log.Infof("%s Deployment","Get")
 				err := httpPostForm(formatJson(&Project{ClusterName: clusterName,Timestamp: time.Now().Unix(),Namespaces: getDeployment(clientSet)}))
 				if err != nil{
-					fmt.Println(err)
+					Log.Error(err)
 				}
 			case e := <-watchChannel:
-				log.Infof("%s Deployment,Name: %s,NameSpace: %s",e["type"],e["name"],e["namespace"])
+				Log.Infof("%s Deployment,Name: %s,NameSpace: %s",e["type"],e["name"],e["namespace"])
 				err := httpPostForm(formatJson(&Project{ClusterName: clusterName,Timestamp: time.Now().Unix(),Namespaces: getDeployment(clientSet)}))
 				if err != nil{
-					fmt.Println(err)
+					Log.Error(err)
 				}
 		}
 	}
@@ -332,4 +350,21 @@ func homeDir() string {
 		return h
 	}
 	return os.Getenv("USERPROFILE") // windows
+}
+
+
+func NewLogger() *logrus.Logger {
+	if Log != nil {
+		return Log
+	}
+	pathMap := lfshook.PathMap{
+		logrus.InfoLevel:  "/data/info.log",
+		logrus.ErrorLevel: "/data/error.log",
+	}
+	Log = logrus.New()
+	Log.Hooks.Add(lfshook.NewHook(
+		pathMap,
+		&logrus.JSONFormatter{},
+	))
+	return Log
 }
