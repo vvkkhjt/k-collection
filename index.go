@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// Note: the example only works with the code within the same release/branch.
 package main
 
 import (
@@ -96,8 +95,8 @@ func main() {
 
 	//go startWatchDp(clientSet)
 	go getChannel(clientSet)
-	//go startWatchDeployment(clientSet)
-	go startGetProject()
+	go startWatchDeployment(clientSet)
+	//go startGetProject()
 	select {}
 }
 
