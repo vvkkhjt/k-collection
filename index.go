@@ -17,10 +17,8 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"github.com/rifflock/lfshook"
-	"path/filepath"
-
 	"fmt"
+	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"k8s.io/api/apps/v1beta1"
@@ -32,6 +30,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"time"
 )
