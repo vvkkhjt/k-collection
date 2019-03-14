@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7731f7be-eb7e-4bd4-ad1a-266b93e48950" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.go" beforeDir="false" afterPath="$PROJECT_DIR$/index.go" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -15,15 +16,20 @@
     <favorites_list name="go" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="38">
-                <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-              </first_editor>
-              <second_editor />
+        <entry file="file://$PROJECT_DIR$/index.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-481">
+              <caret line="221" column="19" selection-start-line="221" selection-start-column="8" selection-end-line="221" selection-end-column="19" />
+              <folding>
+                <element signature="e#582#971#0" expanded="true" />
+                <element signature="e#3207#4340#0" />
+                <element signature="e#5261#6548#0" />
+                <element signature="e#6660#7059#0" />
+                <element signature="e#7119#7284#0" />
+                <element signature="e#8413#8512#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -60,8 +66,12 @@
       <find>Event</find>
       <find>ResultChan</find>
       <find>获取</find>
-      <find>log</find>
       <find>Log.</find>
+      <find>log</find>
+      <find>Log</find>
+      <find>for</find>
+      <find>Printf</find>
+      <find>sendChannel</find>
     </findStrings>
     <replaceStrings>
       <replace>nname</replace>
@@ -98,8 +108,8 @@
         <option value="$PROJECT_DIR$/channel.go" />
         <option value="$PROJECT_DIR$/Dockerfile" />
         <option value="$PROJECT_DIR$/demo.yaml" />
-        <option value="$PROJECT_DIR$/index.go" />
         <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/index.go" />
       </list>
     </option>
   </component>
@@ -115,7 +125,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -127,6 +136,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="AndroidView" />
       <pane id="PackagesPane" />
     </panes>
@@ -141,7 +151,7 @@
     <property name="configurable.Project.GOPATH.is.expanded" value="true" />
     <property name="go.gopath.indexing.explicitly.defined" value="true" />
     <property name="go.vendoring.notification.had.been.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="F:/digisky/ci/yw/autonline-deploy" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -217,7 +227,7 @@
     <frame x="-7" y="40" width="1294" height="1047" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.498366" visible="true" weight="0.16126418" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.498366" visible="true" weight="0.16855754" />
       <window_info id="Structure" order="1" sideWeight="0.501634" side_tool="true" weight="0.25364667" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -232,7 +242,7 @@
       <window_info anchor="bottom" id="TODO" order="5" weight="0.32932165" />
       <window_info anchor="bottom" id="Version Control" order="6" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49918962" visible="true" weight="0.56626505" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49918962" visible="true" weight="0.15443593" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5008104" side_tool="true" weight="0.32968238" />
       <window_info anchor="bottom" id="Messages" order="10" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
@@ -254,13 +264,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/vendor/k8s.io/apimachinery/pkg/fields/selector.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="73" column="5" selection-start-line="73" selection-start-column="5" selection-end-line="73" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/vendor/k8s.io/client-go/kubernetes/typed/apps/v1/apps_client.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="196">
@@ -564,30 +567,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="114">
-          <caret line="153" column="23" lean-forward="true" selection-start-line="153" selection-start-column="23" selection-end-line="153" selection-end-column="23" />
-          <folding>
-            <element signature="e#660#1050#0" expanded="true" />
-            <element signature="e#5103#5258#0" />
-            <element signature="e#5340#6627#0" />
-            <element signature="e#6739#7138#0" />
-            <element signature="e#7198#7363#0" />
-            <element signature="e#7410#7813#0" />
-            <element signature="e#8492#8591#0" />
-            <element signature="e#8626#8879#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="38">
-            <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+            <caret line="2" column="17" lean-forward="true" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
           </first_editor>
           <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/go.mod">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="12" lean-forward="true" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/index.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-481">
+          <caret line="221" column="19" selection-start-line="221" selection-start-column="8" selection-end-line="221" selection-end-column="19" />
+          <folding>
+            <element signature="e#582#971#0" expanded="true" />
+            <element signature="e#3207#4340#0" />
+            <element signature="e#5261#6548#0" />
+            <element signature="e#6660#7059#0" />
+            <element signature="e#7119#7284#0" />
+            <element signature="e#8413#8512#0" />
+          </folding>
         </state>
       </provider>
     </entry>

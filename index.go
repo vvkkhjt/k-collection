@@ -94,8 +94,8 @@ func main() {
 
 	//go startWatchDp(clientSet)
 	go getChannel(clientSet)
-	go startWatchDeployment(clientSet)
-	//go startGetProject()
+	//go startWatchDeployment(clientSet)
+	go startGetProject()
 	select {}
 }
 
