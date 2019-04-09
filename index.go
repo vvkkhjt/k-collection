@@ -21,7 +21,7 @@ import (
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
-	"k8s.io/api/apps/v1beta1"
+	"k8s.io/api/apps/v1beta2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
@@ -94,7 +94,7 @@ func main() {
 
 	//go startWatchDp(clientSet)
 	go getChannel(clientSet)
-	//go startWatchDeployment(clientSet)
+	go startWatchDeployment(clientSet)
 	go startGetProject()
 	select {}
 }
@@ -149,27 +149,26 @@ func startWatchDeployment(clientSet *kubernetes.Clientset){
 
 	Log.Info("正在监听deployment...")
 	count := 0
-	deploymentsClient := clientSet.AppsV1beta1().Deployments(metav1.NamespaceAll)
+	deploymentsClient := clientSet.AppsV1beta2().Deployments(metav1.NamespaceAll)
 	list,_ := deploymentsClient.List(metav1.ListOptions{})
 	items := list.Items
 	w, _ := deploymentsClient.Watch(metav1.ListOptions{})
 	for {
 		select {
 			case e, _ := <-w.ResultChan():
-				Log.Infof("162: %s",e)
 				if e.Type == watch.Added || e.Type == watch.Deleted{
 					if count != len(items){
 						count += 1
 					}else{
 						// go的reflect获取运行时的struct
-						nname := e.Object.(*v1beta1.Deployment).Namespace
-						if r, _ := regexp.Compile("^(p|u|user)-");nname != "default" && nname != "cattle-system" &&
+						nname := e.Object.(*v1beta2.Deployment).Namespace
+						if r, _ := regexp.Compile("^(c|p|u|user)-");nname != "default" && nname != "cattle-system" &&
 							nname != "kube-system" && nname != "dsky-system" &&
 							nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
 							data := make(map[string]interface{},1)
 							data["type"] = e.Type
-							data["name"] = e.Object.(*v1beta1.Deployment).Name
-							data["namespace"] = e.Object.(*v1beta1.Deployment).Namespace
+							data["name"] = e.Object.(*v1beta2.Deployment).Name
+							data["namespace"] = e.Object.(*v1beta2.Deployment).Namespace
 							watchChannel <- data
 						}
 					}
@@ -218,10 +217,11 @@ func startGetProject(){
 	}()
 
 	// 循环查询项目
-	for{
-		sendChannel <- 1
-		time.Sleep( 10 * time.Second)
-	}
+	//for{
+	//	sendChannel <- 1
+	//	time.Sleep( 10 * time.Second)
+	//}
+	sendChannel <- 1
 }
 
 // 获取deployment
@@ -240,7 +240,7 @@ func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
 			continue
 		}
 
-		deploymentsClient, _ := clientSet.AppsV1beta1().Deployments(nname).List(metav1.ListOptions{})
+		deploymentsClient, _ := clientSet.AppsV1beta2().Deployments(nname).List(metav1.ListOptions{})
 		ditems := deploymentsClient.Items
 		var ds []Deployment
 
@@ -257,7 +257,7 @@ func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
 		ns = append(ns, Namespace{Name: nname, Deployments: ds})
 
 		// TODO: 添加statefulset finder
-		//statefulsetsClient,_ := clientset.AppsV1beta1().StatefulSets(nname).List(metav1.ListOptions{})
+		//statefulsetsClient,_ := clientset.AppsV1beta2().StatefulSets(nname).List(metav1.ListOptions{})
 		//sitems := statefulsetsClient.Items
 		//if len(sitems) == 0{
 		//	fmt.Println("no statefulsets")
