@@ -1,5 +1,10 @@
 # kapp-agent
 
-定时采集集群deploy数据上报。
+describe: Periodically collect and report the cluster deployment data.
 
-注意创建serviceaccount
+ENVS:
+- CLUSTER_NAME: "cluster name"
+- SITE_URL: "report url"
+- RUN_ENV: "PROD"
+
+TIPS: remember create serviceaccount!
