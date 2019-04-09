@@ -1,4 +1,4 @@
 #!/bin/bash
 VERSION=$1
-docker build -t hub.digi-sky.com/digisky-plat/test:${VERSION} .
-docker push hub.digi-sky.com/digisky-plat/test:${VERSION}
+docker build -t hub.digi-sky.com/yw/kapp-agent:${VERSION} .
+docker push hub.digi-sky.com/yw/kapp-agent:${VERSION}

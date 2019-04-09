@@ -1,15 +1,36 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kapp-admin
+  namespace: dsky-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    k8s-app: kapp-manager
+  name: kapp-manager
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: kapp-admin
+    namespace: dsky-system
+---
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
   labels:
-    run: demo
-  name: demo
-  namespace: test
+    creator: dsky
+  name: kapp-agent
+  namespace: dsky-system
 spec:
   replicas: 1
   selector:
     matchLabels:
-      run: demo
+      appname: kapp-agent
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -18,13 +39,20 @@ spec:
   template:
     metadata:
       labels:
-        run: demo
+        appname: kapp-agent
     spec:
-      serviceAccountName: test-view
+      serviceAccountName: kapp-admin
       containers:
-        - image: hub.digi-sky.com/digisky-plat/test:4
+        - env:
+          - name: CLUSTER_NAME
+            value: ops-build-cluster
+          - name: RUN_ENV
+            value: PROD
+          - name: SITE_URL
+            value: http://192.168.104.92:9600/kubernetes/get_k8s_info
+          image: hub.digi-sky.com/yw/kapp-agent:0.0.24
           imagePullPolicy: IfNotPresent
-          name: demo
+          name: kapp-agent
           resources: {}
           stdin: true
           terminationMessagePath: /dev/termination-log

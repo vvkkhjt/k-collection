@@ -234,7 +234,7 @@ func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
 
 	for i := range nitems {
 		nname := nitems[i].Name
-		if r, _ := regexp.Compile("^(p|u|user)-");nname == "default" || nname == "cattle-system" ||
+		if r, _ := regexp.Compile("^(c|p|u|user)-");nname == "default" || nname == "cattle-system" ||
 			nname == "kube-system" || nname == "dsky-system" ||
 			nname == "kube-public" || nname == "local" || nname == "tools" || r.MatchString(nname) {
 			continue
