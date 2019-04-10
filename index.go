@@ -17,7 +17,6 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"fmt"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -95,6 +94,7 @@ func main() {
 	//go startWatchDp(clientSet)
 	go getChannel(clientSet)
 	go startWatchDeployment(clientSet)
+	//go startWatchConfigMap(clientSet)
 	go startGetProject()
 	select {}
 }
@@ -143,39 +143,101 @@ func startWatchDeployment(clientSet *kubernetes.Clientset){
 	defer func() {
 		err := recover()
 		if err != nil {
-			fmt.Println(err)
+			Log.Error(err)
 		}
 	}()
 
-	Log.Info("正在监听deployment...")
-	count := 0
-	deploymentsClient := clientSet.AppsV1beta2().Deployments(metav1.NamespaceAll)
-	list,_ := deploymentsClient.List(metav1.ListOptions{})
-	items := list.Items
-	w, _ := deploymentsClient.Watch(metav1.ListOptions{})
 	for {
-		select {
-			case e, _ := <-w.ResultChan():
-				if e.Type == watch.Added || e.Type == watch.Deleted{
-					if count != len(items){
-						count += 1
-					}else{
-						// go的reflect获取运行时的struct
-						nname := e.Object.(*v1beta2.Deployment).Namespace
-						if r, _ := regexp.Compile("^(c|p|u|user)-");nname != "default" && nname != "cattle-system" &&
-							nname != "kube-system" && nname != "dsky-system" &&
-							nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
-							data := make(map[string]interface{},1)
-							data["type"] = e.Type
-							data["name"] = e.Object.(*v1beta2.Deployment).Name
-							data["namespace"] = e.Object.(*v1beta2.Deployment).Namespace
-							watchChannel <- data
+		if err := watchHandler(clientSet); err == nil {
+			Log.Warn("watch is stop! restart now...")
+		}
+	}
+}
+
+func watchHandler(clientSet *kubernetes.Clientset) error {
+	Log.Info("正在监听deployment...")
+	deploymentsClient := clientSet.AppsV1beta2().Deployments(metav1.NamespaceAll)
+
+	list, _ := deploymentsClient.List(metav1.ListOptions{})
+	items := list.Items
+
+	timeoutSeconds := int64((5 * time.Minute).Seconds())
+	options := metav1.ListOptions{
+		TimeoutSeconds: &timeoutSeconds,
+	}
+	w, _ := deploymentsClient.Watch(options)
+	defer w.Stop()
+
+	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
+	count := 0
+	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
+	// 所以用ok来监视是否断开链接
+	loop:
+		for{
+			select {
+				case e,ok := <-w.ResultChan():
+					if !ok{
+						break loop
+					}else if e.Type == watch.Added || e.Type == watch.Deleted{
+						if count != len(items){
+							count += 1
+						}else{
+							// go的reflect获取运行时的struct
+							nname := e.Object.(*v1beta2.Deployment).Namespace
+							if r, _ := regexp.Compile("^(c|p|u|user)-");nname != "default" && nname != "cattle-system" &&
+								nname != "kube-system" && nname != "dsky-system" &&
+								nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
+								data := make(map[string]interface{},1)
+								data["type"] = e.Type
+								data["name"] = e.Object.(*v1beta2.Deployment).Name
+								data["namespace"] = e.Object.(*v1beta2.Deployment).Namespace
+								watchChannel <- data
+							}
 						}
 					}
 				}
 		}
-	}
+	return nil
 }
+
+//func startWatchConfigMap(clientSet *kubernetes.Clientset){
+//	defer func() {
+//		err := recover()
+//		if err != nil {
+//			fmt.Println(err)
+//		}
+//	}()
+//
+//	Log.Info("正在监听configmap...")
+//	count := 0
+//	configMaps := clientSet.CoreV1().ConfigMaps(metav1.NamespaceAll)
+//	list,_ := configMaps.List(metav1.ListOptions{})
+//	items := list.Items
+//	w, _ := configMaps.Watch(metav1.ListOptions{})
+//	for {
+//		select {
+//			case e, _ := <-w.ResultChan():
+//				if e.Type == watch.Added || e.Type == watch.Deleted{
+//					if count != len(items){
+//						count += 1
+//					}else{
+//						// go的reflect获取运行时的struct
+//						nname := e.Object.(*v1.ConfigMap).Namespace
+//						println(nname)
+//						//if r, _ := regexp.Compile("^(c|p|u|user)-");nname != "default" && nname != "cattle-system" &&
+//						//	nname != "kube-system" && nname != "dsky-system" &&
+//						//	nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
+//						//	data := make(map[string]interface{},1)
+//						//	data["type"] = e.Type
+//						//	data["name"] = e.Object.(*v1beta2.Deployment).Name
+//						//	data["namespace"] = e.Object.(*v1beta2.Deployment).Namespace
+//						//	watchChannel <- data
+//						//}
+//					}
+//				}
+//		}
+//	}
+//}
 
 //func startWatchDp(clientSet *kubernetes.Clientset){
 //	watchlist := cache.NewListWatchFromClient(
