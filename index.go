@@ -307,7 +307,7 @@ func getDeployment(clientSet *kubernetes.Clientset) []Namespace {
 		var ds []Deployment
 
 		if len(ditems) == 0 {
-			Log.Info("no deployment")
+			Log.Infof("namespace: %s has no deployment", nname)
 		} else {
 			for q := range ditems{
 				o := ditems[q]
