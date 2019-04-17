@@ -34,54 +34,57 @@ import (
 	"time"
 )
 
-const(
+const (
 	envClusterName = "CLUSTER_NAME"
-	envSiteUrl = "SITE_URL"
-	envRunEnv = "RUN_ENV"
+	envSiteUrl     = "SITE_URL"
+	envRunEnv      = "RUN_ENV"
+	envCloud      = "CLOUD"
 )
 
 var (
-	clusterName = "default-cluster"
-	siteUrl = "http://140.143.83.18/cluster"
-	runEnv = "DEV"
-	regChannel = make(chan int,1)
-	watchDepChannel = make(chan WatchDepData,100)
-	watchNodeChannel = make(chan WatchNodeData,100)
-	Log *logrus.Logger
+	clusterName      = "default-cluster"
+	cloud            = "default-cloud"
+	siteUrl          = "http://140.143.83.18/cluster"
+	runEnv           = "DEV"
+	regChannel       = make(chan int, 1)
+	watchDepChannel  = make(chan WatchDepData, 100)
+	watchNodeChannel = make(chan WatchNodeData, 100)
+	Log              *logrus.Logger
 )
 
 type WatchDepData struct {
 	DeploymentName string
-	Type watch.EventType
-	Namespace string
+	Type           watch.EventType
+	Namespace      string
 }
 
 type WatchNodeData struct {
 	Addresses []v1.NodeAddress
-	Type watch.EventType
+	Type      watch.EventType
 }
 
 type WatchProject struct {
-	ClusterName string `json:"clusterName"`
-	Timestamp int64 `json:"timestamp"`
-	ResourceType string `json:"resourceType"`
-	Type watch.EventType `json:"type"`
-	Namespaces []Namespace `json:"namespaces"`
+	ClusterName  string          `json:"clusterName"`
+	Timestamp    int64           `json:"timestamp"`
+	ResourceType string          `json:"resourceType"`
+	Type         watch.EventType `json:"type"`
+	Namespaces   []Namespace     `json:"namespaces"`
 }
 
 type WatchNode struct {
-	ClusterName string `json:"clusterName"`
-	Timestamp int64 `json:"timestamp"`
-	ResourceType string `json:"resourceType"`
-	Type watch.EventType `json:"type"`
-	Node []v1.NodeAddress `json:"node"`
+	ClusterName  string           `json:"clusterName"`
+	Timestamp    int64            `json:"timestamp"`
+	ResourceType string           `json:"resourceType"`
+	Type         watch.EventType  `json:"type"`
+	Node         []v1.NodeAddress `json:"node"`
 }
 
 type Project struct {
-	ClusterName string `json:"clusterName"`
-	Timestamp int64 `json:"timestamp"`
-	Namespaces []Namespace `json:"namespaces"`
-	Nodes []v1.NodeAddress `json:"nodes"`
+	ClusterName string           `json:"clusterName"`
+	Timestamp   int64            `json:"timestamp"`
+	Namespaces  []Namespace      `json:"namespaces"`
+	Nodes       []v1.NodeAddress `json:"nodes"`
+	Cloud       string           `json:"cloud"`
 }
 
 type Namespace struct {
@@ -90,30 +93,37 @@ type Namespace struct {
 }
 
 type Deployment struct {
-	Name string   `json:"name"`
-	Pods []Pod `json:"pods"`
+	Name string `json:"name"`
+	Pods []Pod  `json:"pods"`
 }
 
 type Pod struct {
-	Name string `json:"name"`
+	Name       string   `json:"name"`
 	Containers []string `json:"containers"`
 }
 
 func main() {
-	if cn := os.Getenv(envClusterName);cn == ""{
+	if cn := os.Getenv(envClusterName); cn == "" {
 		//panic("请填写集群名称")
 		clusterName = "default-cluster"
-	}else{
+	} else {
 		clusterName = os.Getenv(envClusterName)
 	}
 
-	if su := os.Getenv(envSiteUrl);su == ""{
+	if cln := os.Getenv(envCloud); cln == "" {
+		//panic("请填写集群名称")
+		cloud = "default-cloud"
+	} else {
+		cloud = os.Getenv(envCloud)
+	}
+
+	if su := os.Getenv(envSiteUrl); su == "" {
 		panic("请填写数据上报地址")
-	}else{
+	} else {
 		siteUrl = os.Getenv(envSiteUrl)
 	}
 
-	if re := os.Getenv(envRunEnv);re != ""{
+	if re := os.Getenv(envRunEnv); re != "" {
 		runEnv = os.Getenv(envRunEnv)
 	}
 
@@ -129,13 +139,12 @@ func main() {
 	select {}
 }
 
-
 // 初始化k8s client
 func initClient() *kubernetes.Clientset {
 	Log.Info("初始化client...")
 	// 本地开发
 	var kConfig *rest.Config
-	if runEnv == "DEV"{
+	if runEnv == "DEV" {
 		var kubeConfig *string
 		if home := homeDir(); home != "" {
 			kubeConfig = flag.String("kubeConfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeConfig file")
@@ -148,7 +157,7 @@ func initClient() *kubernetes.Clientset {
 			panic(err.Error())
 		}
 		kConfig = config
-	}else {
+	} else {
 		// 集群内部署
 		config, err := rest.InClusterConfig()
 		if err != nil {
@@ -169,7 +178,7 @@ func initClient() *kubernetes.Clientset {
 }
 
 // 监听deployment变化
-func startWatchDeployment(clientSet *kubernetes.Clientset){
+func startWatchDeployment(clientSet *kubernetes.Clientset) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -185,7 +194,7 @@ func startWatchDeployment(clientSet *kubernetes.Clientset){
 }
 
 // 监听node变化
-func startWatchNode(clientSet *kubernetes.Clientset){
+func startWatchNode(clientSet *kubernetes.Clientset) {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -218,32 +227,32 @@ func watchDepHandler(clientSet *kubernetes.Clientset) error {
 	count := 0
 	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
 	// 所以用ok来监视是否断开链接
-	loop:
-		for{
-			select {
-				case e,ok := <-w.ResultChan():
-					if !ok{
-						break loop
-					}else if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified{
-						if count != len(items){
-							count += 1
-						}else{
-							// go的断言获取运行时的struct
-							nname := e.Object.(*v1beta2.Deployment).Namespace
-							if r, _ := regexp.Compile("^(c|p|u|user)-");nname != "default" && nname != "cattle-system" &&
-								nname != "kube-system" && nname != "dsky-system" &&
-								nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname){
-								data := WatchDepData{
-									DeploymentName: e.Object.(*v1beta2.Deployment).Name,
-									Namespace: e.Object.(*v1beta2.Deployment).Namespace,
-									Type: e.Type,
-								}
-								watchDepChannel <- data
-							}
+loop:
+	for {
+		select {
+		case e, ok := <-w.ResultChan():
+			if !ok {
+				break loop
+			} else if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified {
+				if count != len(items) {
+					count += 1
+				} else {
+					// go的断言获取运行时的struct
+					nname := e.Object.(*v1beta2.Deployment).Namespace
+					if r, _ := regexp.Compile("^(c|p|u|user)-"); nname != "default" && nname != "cattle-system" &&
+						nname != "kube-system" && nname != "dsky-system" &&
+						nname != "kube-public" && nname != "local" && nname != "tools" && !r.MatchString(nname) {
+						data := WatchDepData{
+							DeploymentName: e.Object.(*v1beta2.Deployment).Name,
+							Namespace:      e.Object.(*v1beta2.Deployment).Namespace,
+							Type:           e.Type,
 						}
+						watchDepChannel <- data
 					}
 				}
+			}
 		}
+	}
 	return nil
 }
 
@@ -265,37 +274,37 @@ func watchNodeHandler(clientSet *kubernetes.Clientset) error {
 	count := 0
 	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
 	// 所以用ok来监视是否断开链接
-	loop:
-		for{
-			select {
-				case e,ok := <-w.ResultChan():
-					if !ok{
-						break loop
-					}else if e.Type == watch.Added || e.Type == watch.Deleted{
-						if count != len(items){
-							count += 1
-						}else{
-							var addresses []v1.NodeAddress
-							for _,v := range e.Object.(*v1.Node).Status.Addresses{
-								addresses = append(addresses,v1.NodeAddress{
-									Address: v.Address,
-									Type: v.Type,
-								})
-							}
-							data := WatchNodeData{
-								Addresses: addresses,
-								Type: e.Type,
-							}
-							watchNodeChannel <- data
-						}
+loop:
+	for {
+		select {
+		case e, ok := <-w.ResultChan():
+			if !ok {
+				break loop
+			} else if e.Type == watch.Added || e.Type == watch.Deleted {
+				if count != len(items) {
+					count += 1
+				} else {
+					var addresses []v1.NodeAddress
+					for _, v := range e.Object.(*v1.Node).Status.Addresses {
+						addresses = append(addresses, v1.NodeAddress{
+							Address: v.Address,
+							Type:    v.Type,
+						})
 					}
+					data := WatchNodeData{
+						Addresses: addresses,
+						Type:      e.Type,
+					}
+					watchNodeChannel <- data
 				}
+			}
 		}
+	}
 	return nil
 }
 
 // 开始获取project
-func startGetProject(){
+func startGetProject() {
 	defer func() {
 		err := recover()
 		if err != nil {
@@ -321,7 +330,7 @@ func getDeploymentWithNamespace(clientSet *kubernetes.Clientset) []Namespace {
 
 	for i := range nitems {
 		nname := nitems[i].Name
-		if r, _ := regexp.Compile("^(c|p|u|user)-");nname == "default" || nname == "cattle-system" ||
+		if r, _ := regexp.Compile("^(c|p|u|user)-"); nname == "default" || nname == "cattle-system" ||
 			nname == "kube-system" || nname == "dsky-system" ||
 			nname == "kube-public" || nname == "local" || nname == "tools" || r.MatchString(nname) {
 			continue
@@ -334,7 +343,7 @@ func getDeploymentWithNamespace(clientSet *kubernetes.Clientset) []Namespace {
 		if len(ditems) == 0 {
 			Log.Infof("namespace: %s has no deployment", nname)
 		} else {
-			for q := range ditems{
+			for q := range ditems {
 				o := ditems[q]
 
 				ps := getPod(clientSet, nname, o.Name)
@@ -364,31 +373,31 @@ func getPod(clientSet *kubernetes.Clientset, namespace string, deploymentName st
 	items := pods.Items
 	var ps []Pod
 
-	for i := range items{
+	for i := range items {
 		o := items[i]
 		var cs []string
 		if re, _ := regexp.Compile(deploymentName); re.MatchString(o.Name) {
-			for q := range o.Spec.Containers{
-				cs = append(cs,o.Spec.Containers[q].Name)
+			for q := range o.Spec.Containers {
+				cs = append(cs, o.Spec.Containers[q].Name)
 			}
-			ps = append(ps, Pod{Name: o.Name,Containers:cs})
+			ps = append(ps, Pod{Name: o.Name, Containers: cs})
 		}
 	}
 	return ps
 }
 
 //获取node
-func getNode(clientSet *kubernetes.Clientset) []v1.NodeAddress{
+func getNode(clientSet *kubernetes.Clientset) []v1.NodeAddress {
 	Log.Info("正在获取Node数据...")
 	var nodeAddress []v1.NodeAddress
 
 	nodesClient := clientSet.CoreV1().Nodes()
 	list, _ := nodesClient.List(metav1.ListOptions{})
 	items := list.Items
-	for _,v := range items{
-		for _,vv := range v.Status.Addresses{
-			nodeAddress = append(nodeAddress,v1.NodeAddress{
-				Type: vv.Type,
+	for _, v := range items {
+		for _, vv := range v.Status.Addresses {
+			nodeAddress = append(nodeAddress, v1.NodeAddress{
+				Type:    vv.Type,
 				Address: vv.Address,
 			})
 		}
@@ -397,100 +406,102 @@ func getNode(clientSet *kubernetes.Clientset) []v1.NodeAddress{
 	return nodeAddress
 }
 
-
 // 发送数据
-func httpPostForm(data string,register bool) {
+func httpPostForm(data string, register bool) {
 	Log.Info("正在发送数据...")
 	resp, err := http.PostForm(siteUrl, url.Values{"data": {data}})
 	if err != nil {
-		Log.Error("链接地址失败..."+err.Error())
-		if register{regChannel <- 1}
+		Log.Error("链接地址失败..." + err.Error())
+		if register {
+			regChannel <- 1
+		}
 
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == 200{
-		if register{
+	if resp.StatusCode == 200 {
+		if register {
 			Log.Info("数据注册完成...")
-		}else{
+		} else {
 			Log.Info("数据发送完成...")
 		}
-	}else{
+	} else {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			Log.Error("读取数据失败:"+err.Error())
+			Log.Error("读取数据失败:" + err.Error())
 		}
 
-		if register{
-			Log.Warn("数据注册失败:",string(body))
+		if register {
+			Log.Warn("数据注册失败:", string(body))
 			regChannel <- 1
-		}else{
-			Log.Warn("数据发送失败:",string(body))
+		} else {
+			Log.Warn("数据发送失败:", string(body))
 		}
 	}
 }
 
 // 接收channel发送数据
-func getChannel(clientSet *kubernetes.Clientset){
-	for{
+func getChannel(clientSet *kubernetes.Clientset) {
+	for {
 		select {
-			case <-regChannel:
-				Log.Infof("%s Deployment","Get")
-				project := &Project{
-					ClusterName: clusterName,
-					Timestamp: time.Now().Unix(),
-					Namespaces: getDeploymentWithNamespace(clientSet),
-					Nodes: getNode(clientSet),
-				}
+		case <-regChannel:
+			Log.Infof("%s Deployment", "Get")
+			project := &Project{
+				ClusterName: clusterName,
+				Timestamp:   time.Now().Unix(),
+				Namespaces:  getDeploymentWithNamespace(clientSet),
+				Nodes:       getNode(clientSet),
+				Cloud:       cloud,
+			}
 
-				jsonBytes, err := json.Marshal(project)
-				if err != nil {
-					Log.Error(err)
-				}
+			jsonBytes, err := json.Marshal(project)
+			if err != nil {
+				Log.Error(err)
+			}
 
-				httpPostForm(string(jsonBytes),true)
-			case e := <-watchDepChannel:
-				Log.Infof("%s Deployment,Name: %s,NameSpace: %s",e.Type,e.DeploymentName,e.Namespace)
-				watchProject := &WatchProject{
-					ClusterName: clusterName,
-					Type: e.Type,
-					Timestamp: time.Now().Unix(),
-					ResourceType: "Deployment",
-					Namespaces: []Namespace{
-						{
-							Name: e.Namespace,
-							Deployments: []Deployment{
-								{
-									Name: e.DeploymentName,
-									Pods: getPod(clientSet,e.Namespace,e.DeploymentName),
-								},
+			httpPostForm(string(jsonBytes), true)
+		case e := <-watchDepChannel:
+			Log.Infof("%s Deployment,Name: %s,NameSpace: %s", e.Type, e.DeploymentName, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Deployment",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						Deployments: []Deployment{
+							{
+								Name: e.DeploymentName,
+								Pods: getPod(clientSet, e.Namespace, e.DeploymentName),
 							},
 						},
 					},
-				}
+				},
+			}
 
-				jsonBytes, err := json.Marshal(watchProject)
-				if err != nil {
-					Log.Error(err)
-				}
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				Log.Error(err)
+			}
 
-				httpPostForm(string(jsonBytes),false)
-			case e := <- watchNodeChannel:
-				Log.Infof("%s Node,Addresses: %s",e.Type,e.Addresses)
-				watchNode := &WatchNode{
-					ClusterName: clusterName,
-					Type: e.Type,
-					Timestamp: time.Now().Unix(),
-					ResourceType: "Node",
-					Node: e.Addresses,
-				}
+			httpPostForm(string(jsonBytes), false)
+		case e := <-watchNodeChannel:
+			Log.Infof("%s Node,Addresses: %s", e.Type, e.Addresses)
+			watchNode := &WatchNode{
+				ClusterName:  clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Node",
+				Node:         e.Addresses,
+			}
 
-				jsonBytes, err := json.Marshal(watchNode)
-				if err != nil {
-					Log.Error(err)
-				}
+			jsonBytes, err := json.Marshal(watchNode)
+			if err != nil {
+				Log.Error(err)
+			}
 
-				httpPostForm(string(jsonBytes),false)
+			httpPostForm(string(jsonBytes), false)
 		}
 	}
 }
@@ -502,7 +513,6 @@ func homeDir() string {
 	}
 	return os.Getenv("USERPROFILE") // windows
 }
-
 
 func NewLogger() *logrus.Logger {
 	if Log != nil {
@@ -519,8 +529,6 @@ func NewLogger() *logrus.Logger {
 	))
 	return Log
 }
-
-
 
 //func startWatchConfigMap(clientSet *kubernetes.Clientset){
 //	defer func() {
