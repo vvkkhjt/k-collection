@@ -38,7 +38,7 @@ const (
 	envClusterName = "CLUSTER_NAME"
 	envSiteUrl     = "SITE_URL"
 	envRunEnv      = "RUN_ENV"
-	envCloud      = "CLOUD"
+	envCloud       = "CLOUD"
 )
 
 var (
@@ -402,40 +402,53 @@ func getNode(clientSet *kubernetes.Clientset) []v1.NodeAddress {
 			})
 		}
 	}
-
+	Log.Info("获取Node数据完成...")
 	return nodeAddress
 }
 
 // 发送数据
 func httpPostForm(data string, register bool) {
-	Log.Info("正在发送数据...")
+	if register{
+		Log.Info("正在注册数据...")
+	}else{
+		Log.Info("正在发送数据...")
+	}
+
 	resp, err := http.PostForm(siteUrl, url.Values{"data": {data}})
 	if err != nil {
-		Log.Error("链接地址失败..." + err.Error())
+		Log.Error("链接地址失败:" + err.Error())
 		if register {
 			regChannel <- 1
 		}
+	}else{
+		defer func() {
+			err := resp.Body.Close()
+			if err != nil{
+				Log.Error(err.Error())
+			}
+		}()
 
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == 200 {
-		if register {
-			Log.Info("数据注册完成...")
+		if resp.StatusCode == 200 {
+			if register {
+				Log.Info("数据注册完成...")
+			} else {
+				Log.Info("数据发送完成...")
+			}
 		} else {
-			Log.Info("数据发送完成...")
-		}
-	} else {
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			Log.Error("读取数据失败:" + err.Error())
-		}
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				Log.Error("读取数据失败:" + err.Error())
+			}else{
+				if register {
+					Log.Warn("数据注册失败:", string(body))
+				} else {
+					Log.Warn("数据发送失败:", string(body))
+				}
+			}
 
-		if register {
-			Log.Warn("数据注册失败:", string(body))
-			regChannel <- 1
-		} else {
-			Log.Warn("数据发送失败:", string(body))
+			if register{
+				regChannel <- 1
+			}
 		}
 	}
 }
@@ -445,7 +458,6 @@ func getChannel(clientSet *kubernetes.Clientset) {
 	for {
 		select {
 		case <-regChannel:
-			Log.Infof("%s Deployment", "Get")
 			project := &Project{
 				ClusterName: clusterName,
 				Timestamp:   time.Now().Unix(),
