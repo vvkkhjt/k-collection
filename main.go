@@ -44,7 +44,7 @@ const (
 var (
 	clusterName      = "default-cluster"
 	cloud            = "default-cloud"
-	siteUrl          = "http://140.143.83.18/cluster"
+	siteUrl          = "http://localhost:3000/cluster"
 	runEnv           = "DEV"
 	regChannel       = make(chan int, 1)
 	watchDepChannel  = make(chan WatchDepData, 100)
@@ -118,7 +118,7 @@ func main() {
 	}
 
 	if su := os.Getenv(envSiteUrl); su == "" {
-		panic("请填写数据上报地址")
+		//panic("请填写数据上报地址")
 	} else {
 		siteUrl = os.Getenv(envSiteUrl)
 	}
@@ -375,6 +375,9 @@ func getPod(clientSet *kubernetes.Clientset, namespace string, deploymentName st
 
 	for i := range items {
 		o := items[i]
+		for _,q := range o.Status.ContainerStatuses{
+			println(q.ContainerID)
+		}
 		var cs []string
 		if re, _ := regexp.Compile(deploymentName); re.MatchString(o.Name) {
 			for q := range o.Spec.Containers {
@@ -394,6 +397,7 @@ func getNode(clientSet *kubernetes.Clientset) []v1.NodeAddress {
 	nodesClient := clientSet.CoreV1().Nodes()
 	list, _ := nodesClient.List(metav1.ListOptions{})
 	items := list.Items
+
 	for _, v := range items {
 		for _, vv := range v.Status.Addresses {
 			nodeAddress = append(nodeAddress, v1.NodeAddress{
