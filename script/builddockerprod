@@ -1,0 +1,4 @@
+#!/bin/bash
+VERSION=$1
+docker build -t ccr.ccs.tencentyun.com/digisky-base/kapp-agent:${VERSION} .
+docker push ccr.ccs.tencentyun.com/digisky-base/kapp-agent:${VERSION}

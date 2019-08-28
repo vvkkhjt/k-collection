@@ -1,4 +1,18 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: dsky-system
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJjY3IuY2NzLnRlbmNlbnR5dW4uY29tIjp7InVzZXJuYW1lIjoiMTAwMDA2MzUxNjU1IiwicGFzc3dvcmQiOiI0TFNPJTh0d0FMMzM3U1l0IiwiZW1haWwiOiJudWxsIiwiYXV0aCI6Ik1UQXdNREEyTXpVeE5qVTFPalJNVTA4bE9IUjNRVXd6TXpkVFdYUT0ifX19
+kind: Secret
+metadata:
+  name: ccr-pull
+  namespace: dsky-system
+type: kubernetes.io/dockerconfigjson
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kapp-admin
@@ -50,6 +64,8 @@ spec:
             value: PROD
           - name: SITE_URL
             value: http://192.168.104.92:9600/kubernetes/get_k8s_info
+          - name: CLOUD
+            value: qlcoud
           image: hub.digi-sky.com/yw/kapp-agent:0.0.24
           imagePullPolicy: IfNotPresent
           name: kapp-agent
@@ -59,7 +75,7 @@ spec:
           terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       imagePullSecrets:
-        - name: harbor-ci
+        - name: ccr-pull
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
