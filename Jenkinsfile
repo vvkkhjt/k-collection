@@ -36,7 +36,7 @@ node("autonline"){
         }
 
         stage("Send Mail"){
-            emailext body: "用户${env.BUILD_USER}刚刚完成了kapp-agent更新，请相关同事注意。更新信息地址: ${env.JOB_URL},版本号:${env.PIPELINE_VERSION}", recipientProviders: [[$class: 'DevelopersRecipientProvider']], subject: 'kapp-agent构建成功', to: 'wutao@digisky.com,wangzheying@digisky.com'
+            emailext body: "用户${env.BUILD_USER}刚刚完成了kapp-agent更新，请相关同事注意。更新信息地址: ${env.JOB_URL},内网镜像:${imgHubQA}/${imgNamespace}/${artifactId}:${env.PIPELINE_VERSION},外网镜像:${imgHubProd}/${imgProdNamespace}/${artifactId}:${env.PIPELINE_VERSION}", recipientProviders: [[$class: 'DevelopersRecipientProvider']], subject: 'kapp-agent构建成功', to: 'wutao@digisky.com,wangzheying@digisky.com'
         }
     }catch(e){
         stage("Send Mail"){
