@@ -11,7 +11,7 @@ import (
 )
 
 var(
-	RegExp,_ = regexp.Compile("^(c|p|u|user|cattle)")
+	RegExp,_ = regexp.Compile("^(c|p|u|user|cattle)-")
 )
 
 type WatchDepData struct {
