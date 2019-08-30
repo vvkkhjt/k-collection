@@ -38,8 +38,8 @@ const (
 )
 
 var (
-	clusterName      = "default-cluster"
-	cloud            = "default-cloud"
+	clusterName      = "build-cluster"
+	cloud            = "inside"
 	siteUrl          = "http://localhost:3000/cluster"
 	//siteUrl          = "http://192.168.104.92:8000/api/k8s/k8sync/"
 	runEnv           = "DEV"
@@ -61,14 +61,14 @@ type WatchNode struct {
 	Timestamp    int64            `json:"timestamp"`
 	ResourceType string           `json:"resourceType"`
 	Type         watch.EventType  `json:"type"`
-	Node         []v1.NodeAddress `json:"node"`
+	Node         v1.Node          `json:"node"`
 }
 
 type Project struct {
 	ClusterName string           `json:"clusterName"`
 	Timestamp   int64            `json:"timestamp"`
 	Namespaces  []Namespace      `json:"namespaces"`
-	Nodes       []v1.NodeAddress `json:"nodes"`
+	Nodes       []v1.Node        `json:"nodes"`
 	Cloud       string           `json:"cloud"`
 }
 
@@ -100,14 +100,14 @@ type Container struct {
 func main() {
 	if cn := os.Getenv(envClusterName); cn == "" {
 		//panic("请填写集群名称")
-		clusterName = "default-cluster"
+		clusterName = "build-cluster"
 	} else {
 		clusterName = os.Getenv(envClusterName)
 	}
 
 	if cln := os.Getenv(envCloud); cln == "" {
 		//panic("请填写集群名称")
-		cloud = "default-cloud"
+		cloud = "inside"
 	} else {
 		cloud = os.Getenv(envCloud)
 	}
@@ -314,21 +314,16 @@ func getPod(clientSet *kubernetes.Clientset, namespace string, labelSelector map
 }
 
 //获取node
-func getNode(clientSet *kubernetes.Clientset) []v1.NodeAddress {
+func getNode(clientSet *kubernetes.Clientset) []v1.Node {
 	util.Log.Info("正在获取Node数据...")
-	var nodeAddress []v1.NodeAddress
+	var nodeAddress []v1.Node
 
 	nodesClient := clientSet.CoreV1().Nodes()
 	list, _ := nodesClient.List(metav1.ListOptions{})
 	items := list.Items
 
 	for _, v := range items {
-		for _, vv := range v.Status.Addresses {
-			nodeAddress = append(nodeAddress, v1.NodeAddress{
-				Type:    vv.Type,
-				Address: vv.Address,
-			})
-		}
+		nodeAddress = append(nodeAddress, v)
 	}
 	util.Log.Info("获取Node数据完成...")
 	return nodeAddress
@@ -391,13 +386,13 @@ func getChannel(clientSet *kubernetes.Clientset) {
 
 			util.HttpPostForm(string(jsonBytes),siteUrl)
 		case e := <-watchNodeChannel:
-			util.Log.Infof("%s Node,Addresses: %s", e.Type, e.Addresses)
+			util.Log.Infof("%s Node,Addresses: %s", e.Type, e.Node.Status.Addresses)
 			watchNode := &WatchNode{
 				ClusterName:  clusterName,
 				Type:         e.Type,
 				Timestamp:    time.Now().Unix(),
 				ResourceType: "Node",
-				Node:         e.Addresses,
+				Node:         *e.Node,
 			}
 
 			jsonBytes, err := json.Marshal(watchNode)

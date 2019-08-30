@@ -27,7 +27,7 @@ type WatchStatefulData struct {
 }
 
 type WatchNodeData struct {
-	Addresses []v1.NodeAddress
+	Node      *v1.Node
 	Type      watch.EventType
 }
 
@@ -149,20 +149,13 @@ loop:
 		case e, ok := <-w.ResultChan():
 			if !ok {
 				break loop
-			} else if e.Type == watch.Added || e.Type == watch.Deleted {
+			} else if e.Type == watch.Added || e.Type == watch.Deleted{
 				if count != len(items) {
 					count += 1
 				} else {
-					var addresses []v1.NodeAddress
-					for _, v := range e.Object.(*v1.Node).Status.Addresses {
-						addresses = append(addresses, v1.NodeAddress{
-							Address: v.Address,
-							Type:    v.Type,
-						})
-					}
 					data := WatchNodeData{
-						Addresses: addresses,
-						Type:      e.Type,
+						Node: e.Object.(*v1.Node),
+						Type: e.Type,
 					}
 					watchNodeChannel <- data
 				}
