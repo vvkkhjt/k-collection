@@ -55,6 +55,15 @@ spec:
       labels:
         appname: kapp-agent
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: dsky/kapp
+                    operator: In
+                    values:
+                      - "true"
       serviceAccountName: kapp-admin
       containers:
         - env:

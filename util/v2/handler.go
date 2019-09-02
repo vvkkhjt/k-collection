@@ -1,38 +1,72 @@
-package util
+package v2
 
 import (
+	"encoding/json"
 	"k8s.io/api/apps/v1beta2"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
-	"regexp"
+	. "kappagent/global"
+	"kappagent/util"
+	"kappagent/util/common"
 	"time"
 )
 
-var(
-	RegExp,_ = regexp.Compile("^(c|p|u|user|cattle)-")
-)
+// 获取Resource
+func GetResourceWithNamespace(clientSet *kubernetes.Clientset) []Namespace {
+	util.Log.Info("正在获取项目数据...")
+	var ns []Namespace
 
-type WatchDepData struct {
-	Deployment *v1beta2.Deployment
-	Type       watch.EventType
-	Namespace  string
-}
+	namespaceItems, _ := clientSet.CoreV1().Namespaces().List(metav1.ListOptions{})
+	nitems := namespaceItems.Items
 
-type WatchStatefulData struct {
-	StatefulSet *v1beta2.StatefulSet
-	Type        watch.EventType
-	Namespace   string
-}
+	for i := range nitems {
+		// 收集deployment
+		nname := nitems[i].Name
+		if nname == "default" || nname == "kube-system" || nname == "kube-public" ||
+			nname == "local" || nname == "tools" || RegExp.MatchString(nname) {
+			continue
+		}
+		var ss []StatefulSet
+		var ds []Deployment
 
-type WatchNodeData struct {
-	Node      *v1.Node
-	Type      watch.EventType
+		deploymentsClient, _ := clientSet.AppsV1beta2().Deployments(nname).List(metav1.ListOptions{})
+		ditems := deploymentsClient.Items
+
+		if len(ditems) == 0 {
+			util.Log.Infof("namespace: %s has no deployment", nname)
+		} else {
+			for q := range ditems {
+				o := ditems[q]
+
+				ps := common.GetPod(clientSet, nname, o.Spec.Selector.MatchLabels)
+				ds = append(ds, Deployment{Data: o, Pods: ps})
+			}
+		}
+
+		// 收集statefulset
+		statefulsetsClient, _ := clientSet.AppsV1beta2().StatefulSets(nname).List(metav1.ListOptions{})
+		sitems := statefulsetsClient.Items
+		if len(sitems) == 0 {
+			util.Log.Infof("namespace: %s has no statefulsets", nname)
+		} else {
+			for q := range sitems {
+				o := sitems[q]
+
+				ps := common.GetPod(clientSet, nname, o.Spec.Selector.MatchLabels)
+				ss = append(ss, StatefulSet{Data: o, Pods: ps})
+			}
+		}
+
+		ns = append(ns, Namespace{Name: nname, Deployments: ds, StatefulSets: ss})
+	}
+	util.Log.Info("获取项目数据完成...")
+	return ns
 }
 
 func WatchDepHandler(clientSet *kubernetes.Clientset, watchDeploymentChannel chan WatchDepData) error {
-	Log.Info("正在监听deployment...")
+	util.Log.Info("正在监听deployment...")
 	deploymentsClient := clientSet.AppsV1beta2().Deployments(metav1.NamespaceAll)
 
 	list, _ := deploymentsClient.List(metav1.ListOptions{})
@@ -79,7 +113,7 @@ loop:
 }
 
 func WatchStatefulHandler(clientSet *kubernetes.Clientset, watchStatefulSetChannel chan WatchStatefulData) error {
-	Log.Info("正在监听statefulset...")
+	util.Log.Info("正在监听statefulset...")
 	statefulSetClient := clientSet.AppsV1beta2().StatefulSets(metav1.NamespaceAll)
 
 	list, _ := statefulSetClient.List(metav1.ListOptions{})
@@ -126,7 +160,7 @@ loop:
 }
 
 func WatchNodeHandler(clientSet *kubernetes.Clientset, watchNodeChannel chan WatchNodeData) error {
-	Log.Info("正在监听node...")
+	util.Log.Info("正在监听node...")
 	nodesClient := clientSet.CoreV1().Nodes()
 
 	list, _ := nodesClient.List(metav1.ListOptions{})
@@ -163,4 +197,80 @@ loop:
 		}
 	}
 	return nil
+}
+
+// 接收channel发送数据
+func GetChannel(clientSet *kubernetes.Clientset) {
+	for {
+		select {
+		case e := <-WatchDeploymentChannel:
+			util.Log.Infof("%s Deployment,Name: %s,NameSpace: %s", e.Type, e.Deployment.Name, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  ClusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Deployment",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						Deployments: []Deployment{
+							{
+								Data: *e.Deployment,
+								Pods: common.GetPod(clientSet, e.Namespace, e.Deployment.Spec.Selector.MatchLabels),
+							},
+						},
+					},
+				},
+			}
+
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				util.Log.Error(err)
+			}
+
+			util.HttpPostForm(string(jsonBytes), SiteUrl)
+		case e := <-WatchStatefulSetChannel:
+			util.Log.Infof("%s StatefulSet,Name: %s,NameSpace: %s", e.Type, e.StatefulSet.Name, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  ClusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "StatefulSet",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						StatefulSets: []StatefulSet{
+							{
+								Data: *e.StatefulSet,
+								Pods: common.GetPod(clientSet, e.Namespace, e.StatefulSet.Spec.Selector.MatchLabels),
+							},
+						},
+					},
+				},
+			}
+
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				util.Log.Error(err)
+			}
+
+			util.HttpPostForm(string(jsonBytes), SiteUrl)
+		case e := <-WatchNodeChannel:
+			util.Log.Infof("%s Node,Addresses: %s", e.Type, e.Node.Status.Addresses)
+			watchNode := &WatchNode{
+				ClusterName:  ClusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Node",
+				Node:         *e.Node,
+			}
+
+			jsonBytes, err := json.Marshal(watchNode)
+			if err != nil {
+				util.Log.Error(err)
+			}
+
+			util.HttpPostForm(string(jsonBytes), SiteUrl)
+		}
+	}
 }

@@ -1,4 +1,4 @@
-FROM hub.digi-sky.com/base/golang:1.11.4
+FROM hub.digi-sky.com/base/golang:1.12.9
 
 WORKDIR /usr/src/kapp-agent
 COPY . .

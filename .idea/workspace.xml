@@ -2,9 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7731f7be-eb7e-4bd4-ad1a-266b93e48950" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/global/global.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/common/handler.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/v1/handler.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/v1/watcher.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/v2/watcher.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/template.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/template.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/util/v2/handler.go" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,32 +25,86 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="266">
-              <caret line="44" column="28" lean-forward="true" selection-start-line="44" selection-start-column="28" selection-end-line="44" selection-end-column="28" />
+            <state relative-caret-position="183">
+              <caret line="83" column="39" lean-forward="true" selection-start-line="83" selection-start-column="39" selection-end-line="83" selection-end-column="39" />
               <folding>
-                <element signature="e#582#976#0" expanded="true" />
-                <element signature="e#3697#4547#0" />
-                <element signature="e#4626#4882#0" />
-                <element signature="e#4963#5224#0" />
-                <element signature="e#5291#5534#0" />
-                <element signature="e#5851#7334#0" />
-                <element signature="e#7456#7846#0" />
+                <element signature="e#582#973#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/util/handler.go">
+        <entry file="file://$PROJECT_DIR$/util/v2/watcher.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="151" column="71" lean-forward="true" selection-start-line="151" selection-start-column="71" selection-end-line="151" selection-end-column="71" />
+            <state relative-caret-position="-289">
+              <caret line="17" column="24" lean-forward="true" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
               <folding>
-                <element signature="e#14#202#0" expanded="true" />
+                <element signature="e#12#93#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/v2/handler.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="509">
+              <caret line="200" lean-forward="true" selection-start-line="200" selection-end-line="275" selection-end-column="1" />
+              <folding>
+                <element signature="e#14#208#0" expanded="true" />
+                <element signature="n#!!block;n#WatchStatefulHandler#0" />
+                <element signature="n#!!block;n#WatchNodeHandler#0" />
+                <element signature="n#!!block;n#getChannel#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/v1/watcher.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="266">
+              <caret line="23" column="27" selection-start-line="23" selection-start-column="27" selection-end-line="23" selection-end-column="27" />
+              <folding>
+                <element signature="e#12#71#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/v1/handler.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="237" column="43" lean-forward="true" selection-start-line="237" selection-start-column="43" selection-end-line="237" selection-end-column="43" />
+              <folding>
+                <element signature="e#12#275#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/global/global.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="893">
+              <caret line="104" column="31" selection-start-line="104" selection-start-column="19" selection-end-line="104" selection-end-column="31" />
+              <folding>
+                <element signature="e#16#157#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$USER_HOME$/.kube/config">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="361">
+              <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
             </state>
           </provider>
         </entry>
@@ -59,10 +120,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Printf</find>
-      <find>AppsV1beta1</find>
-      <find>ResultChan</find>
-      <find>DefaultChanSize</find>
       <find>ListOptions</find>
       <find>Stop</find>
       <find>stopCh</find>
@@ -89,6 +146,10 @@
       <find>httpPostForm</find>
       <find>/usr/src/kapp-agent</find>
       <find>WatchProject</find>
+      <find>DeploymentOld</find>
+      <find>Deployment</find>
+      <find>&quot;k8s.io/apimachinery/pkg/apis/meta/v1&quot;</find>
+      <find>siteUrl</find>
     </findStrings>
     <replaceStrings>
       <replace>nname</replace>
@@ -108,7 +169,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/path.go" />
-        <option value="$USER_HOME$/.kube/config" />
         <option value="$PROJECT_DIR$/file.go" />
         <option value="$PROJECT_DIR$/demo/interface1.go" />
         <option value="$PROJECT_DIR$/interface1.go" />
@@ -133,17 +193,27 @@
         <option value="$PROJECT_DIR$/util/tool.go" />
         <option value="$PROJECT_DIR$/index.go" />
         <option value="$PROJECT_DIR$/.gitignore" />
-        <option value="$PROJECT_DIR$/Dockerfile" />
         <option value="$PROJECT_DIR$/Jenkinsfile" />
-        <option value="$PROJECT_DIR$/main.go" />
+        <option value="$PROJECT_DIR$/template.yaml" />
+        <option value="$PROJECT_DIR$/Dockerfile" />
         <option value="$PROJECT_DIR$/util/handler.go" />
+        <option value="$PROJECT_DIR$/util/handlerv1.go" />
+        <option value="$PROJECT_DIR$/util/v1/handlerv1.go" />
+        <option value="$PROJECT_DIR$/util/common/handler.go" />
+        <option value="$PROJECT_DIR$/util/v1/watcher.go" />
+        <option value="$PROJECT_DIR$/util/v2/watcher.go" />
+        <option value="$PROJECT_DIR$/util/v2/handler.go" />
+        <option value="$PROJECT_DIR$/global/global.go" />
+        <option value="$PROJECT_DIR$/util/v1/handler.go" />
+        <option value="$PROJECT_DIR$/main.go" />
+        <option value="$USER_HOME$/.kube/config" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-7" />
     <option name="y" value="40" />
-    <option name="width" value="1294" />
+    <option name="width" value="1299" />
     <option name="height" value="1047" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -152,6 +222,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -159,11 +230,37 @@
               <item name="kappagent" type="b2602c69:ProjectViewProjectNode" />
               <item name="kappagent" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="kappagent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kappagent" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kappagent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kappagent" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="common" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kappagent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kappagent" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="v1" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kappagent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="kappagent" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="v2" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="kappagent" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="AndroidView" />
       <pane id="PackagesPane" />
     </panes>
@@ -187,12 +284,14 @@
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="F:\digisky\ci\yw\kappagent\script" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="F:\digisky\ci\yw\kappagent\util\v2" />
+      <recent name="F:\digisky\ci\yw\kappagent\util\v1" />
       <recent name="F:\go\src\aranya" />
       <recent name="F:\go\src\aranya\demo" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\digisky\ci\yw\kappagent\script" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -250,10 +349,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="40" width="1294" height="1047" extended-state="0" />
+    <frame x="-7" y="40" width="1299" height="1047" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.68532526" visible="true" weight="0.16288492" />
-      <window_info id="Structure" order="1" sideWeight="0.31467474" side_tool="true" visible="true" weight="0.16288492" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.68495077" visible="true" weight="0.1646489" />
+      <window_info id="Structure" order="1" sideWeight="0.31504923" side_tool="true" visible="true" weight="0.1646489" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
       <window_info id="UI Designer" order="4" />
@@ -267,8 +367,8 @@
       <window_info anchor="bottom" id="TODO" order="5" weight="0.32932165" />
       <window_info anchor="bottom" id="Version Control" order="6" weight="0.32968238" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49756888" visible="true" weight="0.27601314" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024311" side_tool="true" visible="true" weight="0.27601314" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49756888" visible="true" weight="0.22124863" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024311" side_tool="true" weight="0.27601314" />
       <window_info anchor="bottom" id="Messages" order="10" />
       <window_info anchor="bottom" id="Docker" order="11" show_stripe_button="false" />
       <window_info anchor="bottom" id="Run" order="12" sideWeight="0.49756888" weight="0.2935378" />
@@ -292,83 +392,6 @@
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/Go/src/io/io.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="98" column="4" selection-start-line="98" selection-start-column="4" selection-end-line="98" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/src/pkg/mod/k8s.io/client-go@v0.0.0-20181009035639-2ccedc1ac864/kubernetes/typed/core/v1/namespace.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="188">
-          <caret line="42" column="4" selection-start-line="42" selection-start-column="4" selection-end-line="42" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/rest/request.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="162">
-          <caret line="595" column="5" lean-forward="true" selection-start-line="595" selection-start-column="5" selection-end-line="595" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/src/pkg/mod/k8s.io/api@v0.0.0-20190313235455-40a48860b5ab/core/v1/resource.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-258">
-          <caret line="18" column="7" lean-forward="true" selection-start-line="18" selection-start-column="7" selection-end-line="18" selection-end-column="7" />
-          <folding>
-            <element signature="e#583#633#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/src/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/kubernetes/clientset.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="234" column="23" selection-start-line="234" selection-start-column="23" selection-end-line="234" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/src/pkg/mod/k8s.io/apimachinery@v0.0.0-20190313205120-d7deff9243b1/pkg/apis/meta/v1/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="333" column="5" selection-start-line="333" selection-start-column="5" selection-end-line="333" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/src/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/kubernetes/typed/core/v1/pod.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="45" column="4" selection-start-line="45" selection-start-column="4" selection-end-line="45" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Go/bin/src/pkg/mod/k8s.io/api@v0.0.0-20190313235455-40a48860b5ab/core/v1/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="2347" column="5" selection-start-line="2347" selection-start-column="5" selection-end-line="2347" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/go.iml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38">
-          <caret line="2" column="40" lean-forward="true" selection-start-line="2" selection-start-column="40" selection-end-line="2" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://F:/go/pkg/mod/github.com/docker/docker@v1.13.1/client/client_windows.go" />
-    <entry file="file://F:/go/pkg/mod/github.com/docker/docker@v1.13.1/client/client_unix.go" />
-    <entry file="file://F:/go/pkg/mod/github.com/docker/docker@v1.13.1/client/client_test.go" />
-    <entry file="file://F:/go/pkg/mod/github.com/docker/docker@v1.13.1/client/client_mock_test.go" />
-    <entry file="file://$PROJECT_DIR$/go.sum">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="10" column="29" lean-forward="true" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Go/src/math/rand/rand.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="200">
@@ -502,13 +525,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://F:/go/pkg/mod/k8s.io/apimachinery@v0.0.0-20190313205120-d7deff9243b1/pkg/apis/meta/v1/types.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="1046" column="5" selection-start-line="1046" selection-start-column="5" selection-end-line="1046" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/util/log.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
@@ -529,20 +545,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/serviceaccount.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="76">
-          <caret line="4" column="16" lean-forward="true" selection-start-line="4" selection-start-column="16" selection-end-line="4" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main1.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-171">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/serviceaccount.yaml" />
+    <entry file="file://$PROJECT_DIR$/main1.go" />
     <entry file="file://C:/Go/src/builtin/builtin.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="184">
@@ -550,13 +554,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="12" column="26" lean-forward="true" selection-start-line="12" selection-start-column="26" selection-end-line="12" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/index.go" />
     <entry file="file://$PROJECT_DIR$/../autonline-deploy/Jenkinsfile">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="114">
@@ -585,13 +583,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/template.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="77" column="24" lean-forward="true" selection-start-line="77" selection-start-column="16" selection-end-line="77" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/Go/src/encoding/json/encode.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
@@ -608,41 +599,162 @@
     </entry>
     <entry file="file://F:/go/pkg/mod/k8s.io/api@v0.0.0-20190313235455-40a48860b5ab/core/v1/types.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="65">
-          <caret line="4046" column="18" selection-start-line="4046" selection-start-column="18" selection-end-line="4046" selection-end-column="18" />
+        <state relative-caret-position="141">
+          <caret line="4172" column="25" lean-forward="true" selection-start-line="4172" selection-start-column="25" selection-end-line="4172" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/template.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="65" column="30" selection-start-line="65" selection-start-column="30" selection-end-line="65" selection-end-column="30" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Dockerfile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="152">
-          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
+        <state>
+          <caret column="40" selection-start-column="40" selection-end-column="40" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/handler.go">
+    <entry file="file://F:/go/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/discovery/discovery_client.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="151" column="71" lean-forward="true" selection-start-line="151" selection-start-column="71" selection-end-line="151" selection-end-column="71" />
+        <state relative-caret-position="295">
+          <caret line="406" column="26" selection-start-line="406" selection-start-column="26" selection-end-line="406" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/apimachinery@v0.0.0-20190313205120-d7deff9243b1/pkg/version/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="388">
+          <caret line="30" column="4" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/kubernetes/clientset.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="245" column="20" selection-start-line="245" selection-start-column="20" selection-end-line="245" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/api@v0.0.0-20190313235455-40a48860b5ab/apps/v1beta1/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="291" column="5" selection-start-line="291" selection-start-column="5" selection-end-line="291" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/kubernetes/typed/apps/v1beta2/deployment.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="45" column="4" selection-start-line="45" selection-start-column="4" selection-end-line="45" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/api@v0.0.0-20190313235455-40a48860b5ab/extensions/v1beta1/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="84" column="5" selection-start-line="84" selection-start-column="5" selection-end-line="84" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/kubernetes/typed/extensions/v1beta1/deployment.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="152">
+          <caret line="23" column="4" lean-forward="true" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/apimachinery@v0.0.0-20190313205120-d7deff9243b1/pkg/apis/meta/v1/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="293" column="4" selection-start-line="293" selection-start-column="4" selection-end-line="293" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://F:/go/pkg/mod/k8s.io/client-go@v11.0.0+incompatible/kubernetes/typed/apps/v1beta1/statefulset.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="228">
+          <caret line="34" column="4" selection-start-line="34" selection-start-column="4" selection-end-line="34" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/v2/watcher.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-289">
+          <caret line="17" column="24" lean-forward="true" selection-start-line="17" selection-start-column="24" selection-end-line="17" selection-end-column="24" />
           <folding>
-            <element signature="e#14#202#0" expanded="true" />
+            <element signature="e#12#93#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/common/handler.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="110">
+          <caret line="6" column="33" lean-forward="true" selection-start-line="6" selection-start-column="33" selection-end-line="6" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/v2/handler.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="509">
+          <caret line="200" lean-forward="true" selection-start-line="200" selection-end-line="275" selection-end-column="1" />
+          <folding>
+            <element signature="e#14#208#0" expanded="true" />
+            <element signature="n#!!block;n#WatchStatefulHandler#0" />
+            <element signature="n#!!block;n#WatchNodeHandler#0" />
+            <element signature="n#!!block;n#getChannel#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="266">
-          <caret line="44" column="28" lean-forward="true" selection-start-line="44" selection-start-column="28" selection-end-line="44" selection-end-column="28" />
+        <state relative-caret-position="183">
+          <caret line="83" column="39" lean-forward="true" selection-start-line="83" selection-start-column="39" selection-end-line="83" selection-end-column="39" />
           <folding>
-            <element signature="e#582#976#0" expanded="true" />
-            <element signature="e#3697#4547#0" />
-            <element signature="e#4626#4882#0" />
-            <element signature="e#4963#5224#0" />
-            <element signature="e#5291#5534#0" />
-            <element signature="e#5851#7334#0" />
-            <element signature="e#7456#7846#0" />
+            <element signature="e#582#973#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/global/global.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="893">
+          <caret line="104" column="31" selection-start-line="104" selection-start-column="19" selection-end-line="104" selection-end-column="31" />
+          <folding>
+            <element signature="e#16#157#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/v1/watcher.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="23" column="27" selection-start-line="23" selection-start-column="27" selection-end-line="23" selection-end-column="27" />
+          <folding>
+            <element signature="e#12#71#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/v1/handler.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="237" column="43" lean-forward="true" selection-start-line="237" selection-start-column="43" selection-end-line="237" selection-end-column="43" />
+          <folding>
+            <element signature="e#12#275#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.kube/config">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="361">
+          <caret line="19" lean-forward="true" selection-start-line="19" selection-end-line="19" />
         </state>
       </provider>
     </entry>
