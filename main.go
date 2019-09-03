@@ -38,7 +38,7 @@ const (
 )
 
 var (
-	runEnv                    = "DEV"
+	runEnv = "DEV"
 )
 
 func main() {
@@ -73,20 +73,16 @@ func main() {
 				break
 			}
 		}
+		go handlerv1.GetChannel(clientSet)
+		go handlerv1.StartWatchDeployment(clientSet)
+		go handlerv1.StartWatchStatefulSet(clientSet)
+		go handlerv1.StartWatchNode(clientSet)
 	} else {
 		for {
 			if success := startRegCluster(clientSet); success {
 				break
 			}
 		}
-	}
-
-	if re.MatchString(ClusterVersion) {
-		go handlerv1.GetChannel(clientSet)
-		go handlerv1.StartWatchDeployment(clientSet)
-		go handlerv1.StartWatchStatefulSet(clientSet)
-		go handlerv1.StartWatchNode(clientSet)
-	} else {
 		go handlerv2.GetChannel(clientSet)
 		go handlerv2.StartWatchDeployment(clientSet)
 		go handlerv2.StartWatchStatefulSet(clientSet)
