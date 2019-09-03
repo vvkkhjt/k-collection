@@ -1,11 +1,37 @@
-package util
+package tool
 
 import (
+	"github.com/rifflock/lfshook"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 )
+
+var (
+	Log *logrus.Logger
+)
+
+func init(){
+	Log = newLogger()
+}
+
+func newLogger() *logrus.Logger {
+	if Log != nil {
+		return Log
+	}
+	pathMap := lfshook.PathMap{
+		logrus.InfoLevel:  "../log/info.log",
+		logrus.ErrorLevel: "../log/error.log",
+	}
+	Log = logrus.New()
+	Log.Hooks.Add(lfshook.NewHook(
+		pathMap,
+		&logrus.JSONFormatter{},
+	))
+	return Log
+}
 
 // 获取本地k8s配置文件路径
 func HomeDir() string {
