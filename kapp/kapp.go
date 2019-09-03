@@ -30,22 +30,15 @@ func Run(clusterName string,cloud string,siteUrl string,regExp *regexp.Regexp){
 				break
 			}
 		}
-		go kapp.V1Agent.GetChannel()
-		go kapp.V1Agent.StartWatchDeployment()
-		go kapp.V1Agent.StartWatchStatefulSet()
-		go kapp.V1Agent.StartWatchNode()
+		kapp.V1Agent.Run()
 	}else{
 		for {
 			if success := kapp.V2Agent.StartRegCluster(); success {
 				break
 			}
 		}
-		go kapp.V2Agent.GetChannel()
-		go kapp.V2Agent.StartWatchDeployment()
-		go kapp.V2Agent.StartWatchStatefulSet()
-		go kapp.V2Agent.StartWatchNode()
+		kapp.V2Agent.Run()
 	}
-	select {}
 }
 
 func (k *Kapp) getVersion() string{

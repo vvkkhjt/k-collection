@@ -27,10 +27,7 @@ type Agent struct {
 
 type Service interface {
 	StartRegCluster() bool
-	StartWatchDeployment()
-	StartWatchStatefulSet()
-	StartWatchNode()
-	GetChannel()
+	Run()
 }
 
 func NewV1Agent(clientSet *kubernetes.Clientset,clusterName string,cloud string,siteUrl string,regExp *regexp.Regexp) Service {
@@ -44,6 +41,32 @@ func NewV1Agent(clientSet *kubernetes.Clientset,clusterName string,cloud string,
 		watchStatefulSetChannel: make(chan WatchStatefulData, 100),
 		watchNodeChannel:        make(chan WatchNodeData, 100),
 	}
+}
+
+func (v1 *Agent) Run(){
+	go v1.startGetChannel()
+	go v1.startWatchDeployment()
+	go v1.startWatchStatefulSet()
+	go v1.startWatchNode()
+	select {}
+}
+// 初始化注册集群
+func (v1 *Agent) StartRegCluster() bool {
+	project := &Project{
+		ClusterName: v1.clusterName,
+		Timestamp:   time.Now().Unix(),
+		Namespaces:  v1.getResourceWithNamespace(),
+		Nodes:       v1.getNode(),
+		Cloud:       v1.cloud,
+	}
+
+	jsonBytes, err := json.Marshal(project)
+	if err != nil {
+		tool.Log.Error(err)
+	}
+
+	success := tool.RegCluster(string(jsonBytes), v1.siteUrl)
+	return success
 }
 
 // 获取Resource
@@ -129,6 +152,128 @@ func (v1 *Agent) getNode() []corev1.Node {
 	}
 	tool.Log.Info("获取Node数据完成...")
 	return nodes
+}
+
+// 接收channel发送数据
+func (v1 *Agent) startGetChannel() {
+	for {
+		select {
+		case e := <-v1.watchDeploymentChannel:
+			tool.Log.Infof("%s Deployment,Name: %s,NameSpace: %s", e.Type, e.Deployment.Name, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  v1.clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Deployment",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						Deployments: []Deployment{
+							{
+								Data: *e.Deployment,
+								Pods: v1.getPod(e.Namespace, e.Deployment.Spec.Selector.MatchLabels),
+							},
+						},
+					},
+				},
+			}
+
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				tool.Log.Error(err)
+			}
+
+			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
+		case e := <-v1.watchStatefulSetChannel:
+			tool.Log.Infof("%s StatefulSet,Name: %s,NameSpace: %s", e.Type, e.StatefulSet.Name, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  v1.clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "StatefulSet",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						StatefulSets: []StatefulSet{
+							{
+								Data: *e.StatefulSet,
+								Pods: v1.getPod(e.Namespace, e.StatefulSet.Spec.Selector.MatchLabels),
+							},
+						},
+					},
+				},
+			}
+
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				tool.Log.Error(err)
+			}
+
+			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
+		case e := <-v1.watchNodeChannel:
+			tool.Log.Infof("%s Node,Addresses: %s", e.Type, e.Node.Status.Addresses)
+			watchNode := &WatchNode{
+				ClusterName:  v1.clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Node",
+				Node:         *e.Node,
+			}
+
+			jsonBytes, err := json.Marshal(watchNode)
+			if err != nil {
+				tool.Log.Error(err)
+			}
+
+			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
+		}
+	}
+}
+
+// 监听资源变化
+func (v1 *Agent) startWatchDeployment() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
+
+	for {
+		if err := v1.watchDepHandler(); err == nil {
+			tool.Log.Info("watch deployment is stop! restart now...")
+		}
+	}
+}
+
+func (v1 *Agent) startWatchStatefulSet() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
+
+	for {
+		if err := v1.watchStatefulHandler(); err == nil {
+			tool.Log.Info("watch statefulset is stop! restart now...")
+		}
+	}
+}
+
+func (v1 *Agent) startWatchNode() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
+
+	for {
+		if err := v1.watchNodeHandler(); err == nil {
+			tool.Log.Info("watch node is stop! restart now...")
+		}
+	}
 }
 
 // watch handler
@@ -264,144 +409,4 @@ loop:
 		}
 	}
 	return nil
-}
-
-// 接收channel发送数据
-func (v1 *Agent) GetChannel() {
-	for {
-		select {
-		case e := <-v1.watchDeploymentChannel:
-			tool.Log.Infof("%s Deployment,Name: %s,NameSpace: %s", e.Type, e.Deployment.Name, e.Namespace)
-			watchProject := &WatchProject{
-				ClusterName:  v1.clusterName,
-				Type:         e.Type,
-				Timestamp:    time.Now().Unix(),
-				ResourceType: "Deployment",
-				Namespaces: []Namespace{
-					{
-						Name: e.Namespace,
-						Deployments: []Deployment{
-							{
-								Data: *e.Deployment,
-								Pods: v1.getPod(e.Namespace, e.Deployment.Spec.Selector.MatchLabels),
-							},
-						},
-					},
-				},
-			}
-
-			jsonBytes, err := json.Marshal(watchProject)
-			if err != nil {
-				tool.Log.Error(err)
-			}
-
-			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
-		case e := <-v1.watchStatefulSetChannel:
-			tool.Log.Infof("%s StatefulSet,Name: %s,NameSpace: %s", e.Type, e.StatefulSet.Name, e.Namespace)
-			watchProject := &WatchProject{
-				ClusterName:  v1.clusterName,
-				Type:         e.Type,
-				Timestamp:    time.Now().Unix(),
-				ResourceType: "StatefulSet",
-				Namespaces: []Namespace{
-					{
-						Name: e.Namespace,
-						StatefulSets: []StatefulSet{
-							{
-								Data: *e.StatefulSet,
-								Pods: v1.getPod(e.Namespace, e.StatefulSet.Spec.Selector.MatchLabels),
-							},
-						},
-					},
-				},
-			}
-
-			jsonBytes, err := json.Marshal(watchProject)
-			if err != nil {
-				tool.Log.Error(err)
-			}
-
-			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
-		case e := <-v1.watchNodeChannel:
-			tool.Log.Infof("%s Node,Addresses: %s", e.Type, e.Node.Status.Addresses)
-			watchNode := &WatchNode{
-				ClusterName:  v1.clusterName,
-				Type:         e.Type,
-				Timestamp:    time.Now().Unix(),
-				ResourceType: "Node",
-				Node:         *e.Node,
-			}
-
-			jsonBytes, err := json.Marshal(watchNode)
-			if err != nil {
-				tool.Log.Error(err)
-			}
-
-			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
-		}
-	}
-}
-
-func (v1 *Agent) StartRegCluster() bool {
-	project := &Project{
-		ClusterName: v1.clusterName,
-		Timestamp:   time.Now().Unix(),
-		Namespaces:  v1.getResourceWithNamespace(),
-		Nodes:       v1.getNode(),
-		Cloud:       v1.cloud,
-	}
-
-	jsonBytes, err := json.Marshal(project)
-	if err != nil {
-		tool.Log.Error(err)
-	}
-
-	success := tool.RegCluster(string(jsonBytes), v1.siteUrl)
-	return success
-}
-
-func (v1 *Agent) StartWatchDeployment() {
-	defer func() {
-		err := recover()
-		if err != nil {
-			tool.Log.Error(err)
-		}
-	}()
-
-	for {
-		if err := v1.watchDepHandler(); err == nil {
-			tool.Log.Info("watch deployment is stop! restart now...")
-		}
-	}
-}
-
-func (v1 *Agent) StartWatchStatefulSet() {
-	defer func() {
-		err := recover()
-		if err != nil {
-			tool.Log.Error(err)
-		}
-	}()
-
-	for {
-		if err := v1.watchStatefulHandler(); err == nil {
-			tool.Log.Info("watch statefulset is stop! restart now...")
-		}
-	}
-}
-
-// 监听node变化
-func (v1 *Agent) StartWatchNode() {
-	defer func() {
-		err := recover()
-		if err != nil {
-			tool.Log.Error(err)
-		}
-	}()
-
-	for {
-		if err := v1.watchNodeHandler(); err == nil {
-			tool.Log.Info("watch node is stop! restart now...")
-		}
-	}
 }
