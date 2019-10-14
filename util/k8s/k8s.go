@@ -18,7 +18,7 @@ var (
 	runEnv = "DEV"
 )
 
-func init(){
+func init() {
 	if re := os.Getenv(envRunEnv); re != "" {
 		runEnv = os.Getenv(envRunEnv)
 	}

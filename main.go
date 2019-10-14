@@ -13,12 +13,12 @@ const (
 )
 
 var (
-	clusterName = "ccs-bj-ops-service"
-	cloud       = "Qcloud"
+	clusterName = "default-cluster"
+	cloud       = "default-cloud"
 	siteUrl     = "http://localhost:3000/cluster"
 	//siteUrl          = "http://192.168.104.92:8000/api/k8s/k8sync/"
 	//siteUrl          = "http://192.168.220.70:30626/api/k8s/k8sync/"
-	regExp,_ = regexp.Compile("^(c|p|u|user|cattle)-")
+	regExp, _ = regexp.Compile("^(c|p|u|user|cattle)-")
 )
 
 func main() {
@@ -37,5 +37,25 @@ func main() {
 		siteUrl = os.Getenv(envSiteUrl)
 	}
 
-	kapp.Run(clusterName,cloud,siteUrl,regExp)
+	ks := kapp.NewKapp(clusterName, cloud, siteUrl, regExp)
+	//signalChan := make(chan os.Signal, 1)
+	//signal.Notify(signalChan,
+	//	os.Kill,
+	//	os.Interrupt,
+	//	syscall.SIGHUP,
+	//	syscall.SIGINT,
+	//	syscall.SIGTERM,
+	//	syscall.SIGQUIT)
+
+	//go func() {
+	//	select{
+	//		case <- signalChan:
+	//			ks.Close()
+	//	}
+	//}()
+
+	ks.Run()
+
+	defer ks.Close()
+	//defer tool.Log.Fatal(tool.KafkaWriter.Close())
 }

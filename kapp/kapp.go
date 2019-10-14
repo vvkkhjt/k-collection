@@ -6,42 +6,79 @@ import (
 	"kappagent/kapp/v2"
 	"kappagent/util/k8s"
 	"kappagent/util/tool"
+	"os"
 	"regexp"
 )
 
 type Kapp struct {
-	ClientSet *kubernetes.Clientset
-	V1Agent v1.Service
-	V2Agent v2.Service
+	clientSet *kubernetes.Clientset
+	v1Agent   v1.Service
+	v2Agent   v2.Service
 }
 
-func Run(clusterName string,cloud string,siteUrl string,regExp *regexp.Regexp){
+type KappService interface {
+	Run()
+	Close()
+}
+
+func NewKapp(clusterName, cloud, siteUrl string, regExp *regexp.Regexp) KappService {
 	clientSet := k8s.InitClient()
-	kapp := &Kapp{
-		ClientSet: clientSet,
-		V1Agent: v1.NewV1Agent(clientSet,clusterName,cloud,siteUrl,regExp),
-		V2Agent: v2.NewV2Agent(clientSet,clusterName,cloud,siteUrl,regExp),
-	}
-
-	tool.Log.Infof("集群版本: %s",kapp.getVersion())
-	if re, _ := regexp.Compile("1.7.8");re.MatchString(kapp.getVersion()){
-		for {
-			if success := kapp.V1Agent.StartRegCluster(); success {
-				break
-			}
-		}
-		kapp.V1Agent.Run()
-	}else{
-		for {
-			if success := kapp.V2Agent.StartRegCluster(); success {
-				break
-			}
-		}
-		kapp.V2Agent.Run()
+	return &Kapp{
+		clientSet: clientSet,
+		v1Agent:   v1.NewV1Agent(clientSet, clusterName, cloud, siteUrl, regExp),
+		v2Agent:   v2.NewV2Agent(clientSet, clusterName, cloud, siteUrl, regExp),
 	}
 }
 
-func (k *Kapp) getVersion() string{
-	version,_ := k.ClientSet.ServerVersion()
+func (k *Kapp) Run() {
+	tool.Log.Infof("集群版本: %s", k.getVersion())
+	if k.isOldCluster() {
+		for {
+			if success := k.v1Agent.StartRegCluster(); success {
+				break
+			}
+		}
+		k.v1Agent.Run()
+	} else {
+		for {
+			if success := k.v2Agent.StartRegCluster(); success {
+				break
+			}
+		}
+		k.v2Agent.Run()
+	}
+}
+
+func (k *Kapp) Close() {
+	if k.isOldCluster() {
+		k.v1Agent.Close()
+	} else {
+		k.v2Agent.Close()
+	}
+}
+
+func (k *Kapp) isOldCluster() bool {
+	flag := true
+	sr, err := k.clientSet.ServerPreferredResources()
+	if err != nil{
+		tool.Log.Error("获取集群资源列表失败...")
+		os.Exit(1)
+	}
+	for _, i := range sr {
+		if i.GroupVersion == "apps/v1beta2" {
+			flag = false
+			break
+		}
+	}
+
+	return flag
+}
+
+func (k *Kapp) getVersion() string {
+	version, err := k.clientSet.ServerVersion()
+	if err != nil{
+		tool.Log.Error("获取集群版本失败...")
+		os.Exit(1)
+	}
 	return version.String()
 }

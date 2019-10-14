@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"io"
 	"k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	extensionsbeta1 "k8s.io/api/extensions/v1beta1"
@@ -11,45 +12,64 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"kappagent/util/tool"
 	"regexp"
+	"sync"
 	"time"
 )
 
 type Agent struct {
-	clientSet               *kubernetes.Clientset
-	clusterName             string
-	cloud                   string
-	siteUrl                 string
-	regExp                  *regexp.Regexp
-	watchDeploymentChannel  chan WatchDepData
-	watchStatefulSetChannel chan WatchStatefulData
-	watchNodeChannel        chan WatchNodeData
+	clientSet                    *kubernetes.Clientset
+	clusterName                  string
+	cloud                        string
+	siteUrl                      string
+	regExp                       *regexp.Regexp
+	watchDeploymentChannel       chan WatchDepData
+	watchStatefulSetChannel      chan WatchStatefulData
+	watchNodeChannel             chan WatchNodeData
+	mutex                        sync.RWMutex
+	closed                       bool
+	closeWatchChannel            chan int
+	closeWatchDeploymentChannel  chan int
+	closeWatchStatefulSetChannel chan int
+	closeWatchNodeChannel        chan int
+	closer                       sync.WaitGroup
 }
 
 type Service interface {
 	StartRegCluster() bool
 	Run()
+	Close()
 }
 
-func NewV1Agent(clientSet *kubernetes.Clientset,clusterName string,cloud string,siteUrl string,regExp *regexp.Regexp) Service {
+func NewV1Agent(clientSet *kubernetes.Clientset, clusterName string, cloud string, siteUrl string, regExp *regexp.Regexp) Service {
 	return &Agent{
-		clientSet:               clientSet,
-		clusterName:             clusterName,
-		cloud:                   cloud,
-		siteUrl:                 siteUrl,
-		regExp:                  regExp,
-		watchDeploymentChannel:  make(chan WatchDepData, 100),
-		watchStatefulSetChannel: make(chan WatchStatefulData, 100),
-		watchNodeChannel:        make(chan WatchNodeData, 100),
+		clientSet:                    clientSet,
+		clusterName:                  clusterName,
+		cloud:                        cloud,
+		siteUrl:                      siteUrl,
+		regExp:                       regExp,
+		watchDeploymentChannel:       make(chan WatchDepData, 100),
+		watchStatefulSetChannel:      make(chan WatchStatefulData, 100),
+		watchNodeChannel:             make(chan WatchNodeData, 100),
+		closeWatchChannel:            make(chan int, 1),
+		closeWatchDeploymentChannel:  make(chan int, 1),
+		closeWatchStatefulSetChannel: make(chan int, 1),
+		closeWatchNodeChannel:        make(chan int, 1),
 	}
 }
 
-func (v1 *Agent) Run(){
+func (v1 *Agent) Run() {
+	v1.closer.Add(4)
 	go v1.startGetChannel()
 	go v1.startWatchDeployment()
 	go v1.startWatchStatefulSet()
 	go v1.startWatchNode()
-	select {}
+	v1.closer.Wait()
 }
+
+func (v1 *Agent) Close() {
+	v1.closeWatchChannel <- 1
+}
+
 // 初始化注册集群
 func (v1 *Agent) StartRegCluster() bool {
 	project := &Project{
@@ -67,6 +87,290 @@ func (v1 *Agent) StartRegCluster() bool {
 
 	success := tool.RegCluster(string(jsonBytes), v1.siteUrl)
 	return success
+}
+
+// 接收channel发送数据
+func (v1 *Agent) startGetChannel() {
+loop:
+	for {
+		select {
+		case e := <-v1.watchDeploymentChannel:
+			tool.Log.Infof("%s Deployment,Name: %s,NameSpace: %s", e.Type, e.Deployment.Name, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  v1.clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Deployment",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						Deployments: []Deployment{
+							{
+								Data: *e.Deployment,
+								Pods: v1.getPod(e.Namespace, e.Deployment.Spec.Selector.MatchLabels),
+							},
+						},
+					},
+				},
+			}
+
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				tool.Log.Error(err)
+			}
+
+			tool.HttpPostForm(string(jsonBytes), v1.siteUrl, e.Type)
+		case e := <-v1.watchStatefulSetChannel:
+			tool.Log.Infof("%s StatefulSet,Name: %s,NameSpace: %s", e.Type, e.StatefulSet.Name, e.Namespace)
+			watchProject := &WatchProject{
+				ClusterName:  v1.clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "StatefulSet",
+				Namespaces: []Namespace{
+					{
+						Name: e.Namespace,
+						StatefulSets: []StatefulSet{
+							{
+								Data: *e.StatefulSet,
+								Pods: v1.getPod(e.Namespace, e.StatefulSet.Spec.Selector.MatchLabels),
+							},
+						},
+					},
+				},
+			}
+
+			jsonBytes, err := json.Marshal(watchProject)
+			if err != nil {
+				tool.Log.Error(err)
+			}
+
+			tool.HttpPostForm(string(jsonBytes), v1.siteUrl, e.Type)
+		case e := <-v1.watchNodeChannel:
+			tool.Log.Infof("%s Node,Addresses: %s", e.Type, e.Node.Status.Addresses)
+			watchNode := &WatchNode{
+				ClusterName:  v1.clusterName,
+				Type:         e.Type,
+				Timestamp:    time.Now().Unix(),
+				ResourceType: "Node",
+				Node:         *e.Node,
+			}
+
+			jsonBytes, err := json.Marshal(watchNode)
+			if err != nil {
+				tool.Log.Error(err)
+			}
+
+			tool.HttpPostForm(string(jsonBytes), v1.siteUrl, e.Type)
+		case <-v1.closeWatchChannel:
+			v1.mutex.Lock()
+
+			if !v1.closed {
+				v1.closed = true
+				v1.closeWatchDeploymentChannel <- 1
+				close(v1.watchDeploymentChannel)
+				v1.closeWatchStatefulSetChannel <- 1
+				close(v1.watchStatefulSetChannel)
+				v1.closeWatchNodeChannel <- 1
+				close(v1.watchNodeChannel)
+			}
+
+			v1.mutex.Unlock()
+			tool.Log.Info("正在关闭数据发送通道")
+			break loop
+		}
+	}
+	v1.closer.Done()
+}
+
+// 监听资源变化
+func (v1 *Agent) startWatchDeployment() {
+	for {
+		if err := v1.watchDepHandler(); err == nil {
+			tool.Log.Info("watch deployment is stop! restart now...")
+		} else {
+			tool.Log.Info("正在关闭DeploymentWatch")
+			break
+		}
+	}
+	v1.closer.Done()
+}
+
+func (v1 *Agent) startWatchStatefulSet() {
+	for {
+		if err := v1.watchStatefulHandler(); err == nil {
+			tool.Log.Info("watch statefulset is stop! restart now...")
+		} else {
+			tool.Log.Info("正在关闭StatefulSetWatch")
+			break
+		}
+	}
+	v1.closer.Done()
+}
+
+func (v1 *Agent) startWatchNode() {
+	for {
+		if err := v1.watchNodeHandler(); err == nil {
+			tool.Log.Info("watch node is stop! restart now...")
+		} else {
+			tool.Log.Info("正在关闭NodeWatch")
+			break
+		}
+	}
+	v1.closer.Done()
+}
+
+// watch handler
+func (v1 *Agent) watchDepHandler() error {
+	tool.Log.Info("正在监听deployment...")
+	deploymentsClient := v1.clientSet.ExtensionsV1beta1().Deployments(metav1.NamespaceAll)
+
+	list, _ := deploymentsClient.List(metav1.ListOptions{})
+	items := list.Items
+
+	timeoutSeconds := int64((15 * time.Minute).Seconds())
+	options := metav1.ListOptions{
+		TimeoutSeconds: &timeoutSeconds,
+	}
+	w, _ := deploymentsClient.Watch(options)
+	defer w.Stop()
+
+	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
+	count := 0
+	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
+	// 所以用ok来监视是否断开链接
+loop:
+	for {
+		select {
+		case e, ok := <-w.ResultChan():
+			if !ok {
+				break loop
+			} else if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified {
+				if count != len(items) {
+					count += 1
+				} else {
+					// go的断言获取运行时的struct
+					nname := e.Object.(*extensionsbeta1.Deployment).Namespace
+					if nname != "default" && nname != "kube-system" &&
+						nname != "kube-public" && nname != "local" && nname != "tools" &&
+						!v1.regExp.MatchString(nname) {
+						data := WatchDepData{
+							Deployment: e.Object.(*extensionsbeta1.Deployment),
+							Namespace:  e.Object.(*extensionsbeta1.Deployment).Namespace,
+							Type:       e.Type,
+						}
+						v1.watchDeploymentChannel <- data
+					}
+				}
+			}
+		case <-v1.closeWatchDeploymentChannel:
+			break loop
+		}
+	}
+
+	if v1.closed {
+		return io.ErrClosedPipe
+	}
+	return nil
+}
+
+func (v1 *Agent) watchStatefulHandler() error {
+	tool.Log.Info("正在监听statefulset...")
+	statefulSetClient := v1.clientSet.AppsV1beta1().StatefulSets(metav1.NamespaceAll)
+
+	list, _ := statefulSetClient.List(metav1.ListOptions{})
+	items := list.Items
+
+	timeoutSeconds := int64((15 * time.Minute).Seconds())
+	options := metav1.ListOptions{
+		TimeoutSeconds: &timeoutSeconds,
+	}
+	w, _ := statefulSetClient.Watch(options)
+	defer w.Stop()
+
+	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
+	count := 0
+	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
+	// 所以用ok来监视是否断开链接
+loop:
+	for {
+		select {
+		case e, ok := <-w.ResultChan():
+			if !ok {
+				break loop
+			} else if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified {
+				if count != len(items) {
+					count += 1
+				} else {
+					// go的断言获取运行时的struct
+					nname := e.Object.(*v1beta1.StatefulSet).Namespace
+					if nname != "default" && nname != "kube-system" &&
+						nname != "kube-public" && nname != "local" && nname != "tools" &&
+						!v1.regExp.MatchString(nname) {
+						data := WatchStatefulData{
+							StatefulSet: e.Object.(*v1beta1.StatefulSet),
+							Namespace:   e.Object.(*v1beta1.StatefulSet).Namespace,
+							Type:        e.Type,
+						}
+						v1.watchStatefulSetChannel <- data
+					}
+				}
+			}
+		case <-v1.closeWatchStatefulSetChannel:
+			break loop
+		}
+	}
+
+	if v1.closed {
+		return io.ErrClosedPipe
+	}
+	return nil
+}
+
+func (v1 *Agent) watchNodeHandler() error {
+	tool.Log.Info("正在监听node...")
+	nodesClient := v1.clientSet.CoreV1().Nodes()
+
+	list, _ := nodesClient.List(metav1.ListOptions{})
+	items := list.Items
+
+	timeoutSeconds := int64((15 * time.Minute).Seconds())
+	options := metav1.ListOptions{
+		TimeoutSeconds: &timeoutSeconds,
+	}
+	w, _ := nodesClient.Watch(options)
+	defer w.Stop()
+
+	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
+	count := 0
+	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
+	// 所以用ok来监视是否断开链接
+loop:
+	for {
+		select {
+		case e, ok := <-w.ResultChan():
+			if !ok {
+				break loop
+			} else if e.Type == watch.Added || e.Type == watch.Deleted {
+				if count != len(items) {
+					count += 1
+				} else {
+					data := WatchNodeData{
+						Node: e.Object.(*corev1.Node),
+						Type: e.Type,
+					}
+					v1.watchNodeChannel <- data
+				}
+			}
+		case <-v1.closeWatchNodeChannel:
+			break loop
+		}
+	}
+
+	if v1.closed {
+		return io.ErrClosedPipe
+	}
+	return nil
 }
 
 // 获取Resource
@@ -152,261 +456,4 @@ func (v1 *Agent) getNode() []corev1.Node {
 	}
 	tool.Log.Info("获取Node数据完成...")
 	return nodes
-}
-
-// 接收channel发送数据
-func (v1 *Agent) startGetChannel() {
-	for {
-		select {
-		case e := <-v1.watchDeploymentChannel:
-			tool.Log.Infof("%s Deployment,Name: %s,NameSpace: %s", e.Type, e.Deployment.Name, e.Namespace)
-			watchProject := &WatchProject{
-				ClusterName:  v1.clusterName,
-				Type:         e.Type,
-				Timestamp:    time.Now().Unix(),
-				ResourceType: "Deployment",
-				Namespaces: []Namespace{
-					{
-						Name: e.Namespace,
-						Deployments: []Deployment{
-							{
-								Data: *e.Deployment,
-								Pods: v1.getPod(e.Namespace, e.Deployment.Spec.Selector.MatchLabels),
-							},
-						},
-					},
-				},
-			}
-
-			jsonBytes, err := json.Marshal(watchProject)
-			if err != nil {
-				tool.Log.Error(err)
-			}
-
-			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
-		case e := <-v1.watchStatefulSetChannel:
-			tool.Log.Infof("%s StatefulSet,Name: %s,NameSpace: %s", e.Type, e.StatefulSet.Name, e.Namespace)
-			watchProject := &WatchProject{
-				ClusterName:  v1.clusterName,
-				Type:         e.Type,
-				Timestamp:    time.Now().Unix(),
-				ResourceType: "StatefulSet",
-				Namespaces: []Namespace{
-					{
-						Name: e.Namespace,
-						StatefulSets: []StatefulSet{
-							{
-								Data: *e.StatefulSet,
-								Pods: v1.getPod(e.Namespace, e.StatefulSet.Spec.Selector.MatchLabels),
-							},
-						},
-					},
-				},
-			}
-
-			jsonBytes, err := json.Marshal(watchProject)
-			if err != nil {
-				tool.Log.Error(err)
-			}
-
-			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
-		case e := <-v1.watchNodeChannel:
-			tool.Log.Infof("%s Node,Addresses: %s", e.Type, e.Node.Status.Addresses)
-			watchNode := &WatchNode{
-				ClusterName:  v1.clusterName,
-				Type:         e.Type,
-				Timestamp:    time.Now().Unix(),
-				ResourceType: "Node",
-				Node:         *e.Node,
-			}
-
-			jsonBytes, err := json.Marshal(watchNode)
-			if err != nil {
-				tool.Log.Error(err)
-			}
-
-			tool.HttpPostForm(string(jsonBytes), v1.siteUrl)
-		}
-	}
-}
-
-// 监听资源变化
-func (v1 *Agent) startWatchDeployment() {
-	defer func() {
-		err := recover()
-		if err != nil {
-			tool.Log.Error(err)
-		}
-	}()
-
-	for {
-		if err := v1.watchDepHandler(); err == nil {
-			tool.Log.Info("watch deployment is stop! restart now...")
-		}
-	}
-}
-
-func (v1 *Agent) startWatchStatefulSet() {
-	defer func() {
-		err := recover()
-		if err != nil {
-			tool.Log.Error(err)
-		}
-	}()
-
-	for {
-		if err := v1.watchStatefulHandler(); err == nil {
-			tool.Log.Info("watch statefulset is stop! restart now...")
-		}
-	}
-}
-
-func (v1 *Agent) startWatchNode() {
-	defer func() {
-		err := recover()
-		if err != nil {
-			tool.Log.Error(err)
-		}
-	}()
-
-	for {
-		if err := v1.watchNodeHandler(); err == nil {
-			tool.Log.Info("watch node is stop! restart now...")
-		}
-	}
-}
-
-// watch handler
-func (v1 *Agent) watchDepHandler() error {
-	tool.Log.Info("正在监听deployment...")
-	deploymentsClient := v1.clientSet.ExtensionsV1beta1().Deployments(metav1.NamespaceAll)
-
-	list, _ := deploymentsClient.List(metav1.ListOptions{})
-	items := list.Items
-
-	timeoutSeconds := int64((15 * time.Minute).Seconds())
-	options := metav1.ListOptions{
-		TimeoutSeconds: &timeoutSeconds,
-	}
-	w, _ := deploymentsClient.Watch(options)
-	defer w.Stop()
-
-	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
-	count := 0
-	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
-	// 所以用ok来监视是否断开链接
-loop:
-	for {
-		select {
-		case e, ok := <-w.ResultChan():
-			if !ok {
-				break loop
-			} else if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified {
-				if count != len(items) {
-					count += 1
-				} else {
-					// go的断言获取运行时的struct
-					nname := e.Object.(*extensionsbeta1.Deployment).Namespace
-					if nname != "default" && nname != "kube-system" &&
-						nname != "kube-public" && nname != "local" && nname != "tools" &&
-						!v1.regExp.MatchString(nname) {
-						data := WatchDepData{
-							Deployment: e.Object.(*extensionsbeta1.Deployment),
-							Namespace:  e.Object.(*extensionsbeta1.Deployment).Namespace,
-							Type:       e.Type,
-						}
-						v1.watchDeploymentChannel <- data
-					}
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func (v1 *Agent) watchStatefulHandler() error {
-	tool.Log.Info("正在监听statefulset...")
-	statefulSetClient := v1.clientSet.AppsV1beta1().StatefulSets(metav1.NamespaceAll)
-
-	list, _ := statefulSetClient.List(metav1.ListOptions{})
-	items := list.Items
-
-	timeoutSeconds := int64((15 * time.Minute).Seconds())
-	options := metav1.ListOptions{
-		TimeoutSeconds: &timeoutSeconds,
-	}
-	w, _ := statefulSetClient.Watch(options)
-	defer w.Stop()
-
-	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
-	count := 0
-	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
-	// 所以用ok来监视是否断开链接
-loop:
-	for {
-		select {
-		case e, ok := <-w.ResultChan():
-			if !ok {
-				break loop
-			} else if e.Type == watch.Added || e.Type == watch.Deleted || e.Type == watch.Modified {
-				if count != len(items) {
-					count += 1
-				} else {
-					// go的断言获取运行时的struct
-					nname := e.Object.(*v1beta1.StatefulSet).Namespace
-					if nname != "default" && nname != "kube-system" &&
-						nname != "kube-public" && nname != "local" && nname != "tools" &&
-						!v1.regExp.MatchString(nname) {
-						data := WatchStatefulData{
-							StatefulSet: e.Object.(*v1beta1.StatefulSet),
-							Namespace:   e.Object.(*v1beta1.StatefulSet).Namespace,
-							Type:        e.Type,
-						}
-						v1.watchStatefulSetChannel <- data
-					}
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func (v1 *Agent) watchNodeHandler() error {
-	tool.Log.Info("正在监听node...")
-	nodesClient := v1.clientSet.CoreV1().Nodes()
-
-	list, _ := nodesClient.List(metav1.ListOptions{})
-	items := list.Items
-
-	timeoutSeconds := int64((15 * time.Minute).Seconds())
-	options := metav1.ListOptions{
-		TimeoutSeconds: &timeoutSeconds,
-	}
-	w, _ := nodesClient.Watch(options)
-	defer w.Stop()
-
-	// 为了第一次不发送数据，启动watch第一次会输出所有的数据
-	count := 0
-	// watch有超时时间，如果不在listoption里面设置TimeoutSeconds，默认30到60分钟会断开链接，
-	// 所以用ok来监视是否断开链接
-loop:
-	for {
-		select {
-		case e, ok := <-w.ResultChan():
-			if !ok {
-				break loop
-			} else if e.Type == watch.Added || e.Type == watch.Deleted {
-				if count != len(items) {
-					count += 1
-				} else {
-					data := WatchNodeData{
-						Node: e.Object.(*corev1.Node),
-						Type: e.Type,
-					}
-					v1.watchNodeChannel <- data
-				}
-			}
-		}
-	}
-	return nil
 }

@@ -16,11 +16,10 @@ require (
 	github.com/opencontainers/go-digest v1.0.0-rc1 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
+	github.com/segmentio/kafka-go v0.3.3
 	github.com/sirupsen/logrus v0.0.0-20190122192820-7d8d63893b99
 	github.com/spf13/pflag v1.0.3 // indirect
-	golang.org/x/net v0.0.0-20190328230028-74de082e2cca // indirect
 	golang.org/x/oauth2 v0.0.0-20190212230446-3e8b2be13635 // indirect
-	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
 	golang.org/x/text v0.3.1-0.20181227161524-e6919f6577db // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

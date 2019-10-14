@@ -9,15 +9,15 @@ import (
 
 // 老集群数据结构
 type Project struct {
-	ClusterName string         `json:"clusterName"`
-	Timestamp   int64          `json:"timestamp"`
+	ClusterName string      `json:"clusterName"`
+	Timestamp   int64       `json:"timestamp"`
 	Namespaces  []Namespace `json:"namespaces"`
-	Nodes       []v1.Node      `json:"nodes"`
-	Cloud       string         `json:"cloud"`
+	Nodes       []v1.Node   `json:"nodes"`
+	Cloud       string      `json:"cloud"`
 }
 
 type Namespace struct {
-	Name         string           `json:"name"`
+	Name         string        `json:"name"`
 	Deployments  []Deployment  `json:"deployments"`
 	StatefulSets []StatefulSet `json:"statefulsets"`
 }
@@ -46,7 +46,7 @@ type WatchProject struct {
 	Timestamp    int64           `json:"timestamp"`
 	ResourceType string          `json:"resourceType"`
 	Type         watch.EventType `json:"type"`
-	Namespaces   []Namespace  `json:"namespaces"`
+	Namespaces   []Namespace     `json:"namespaces"`
 }
 
 type WatchDepData struct {
