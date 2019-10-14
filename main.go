@@ -15,8 +15,8 @@ const (
 var (
 	clusterName = "default-cluster"
 	cloud       = "default-cloud"
-	siteUrl     = "http://localhost:3000/cluster"
-	//siteUrl          = "http://192.168.104.92:8000/api/k8s/k8sync/"
+	//siteUrl     = "http://localhost:3000/cluster"
+	siteUrl          = "http://192.168.104.73:8000/api/k8s/k8sync/"
 	//siteUrl          = "http://192.168.220.70:30626/api/k8s/k8sync/"
 	regExp, _ = regexp.Compile("^(c|p|u|user|cattle)-")
 )

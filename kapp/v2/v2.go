@@ -99,7 +99,7 @@ loop:
 				ClusterName:  v2.clusterName,
 				Type:         e.Type,
 				Timestamp:    time.Now().Unix(),
-				ResourceType: "deployment",
+				ResourceType: "Deployment",
 				Namespaces: []Namespace{
 					{
 						Name: e.Namespace,
@@ -125,7 +125,7 @@ loop:
 				ClusterName:  v2.clusterName,
 				Type:         e.Type,
 				Timestamp:    time.Now().Unix(),
-				ResourceType: "statefulSet",
+				ResourceType: "StatefulSet",
 				Namespaces: []Namespace{
 					{
 						Name: e.Namespace,
