@@ -222,6 +222,12 @@ func (v1 *Agent) startWatchNode() {
 
 // watch handler
 func (v1 *Agent) watchDepHandler() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
 	tool.Log.Info("正在监听deployment...")
 	deploymentsClient := v1.clientSet.ExtensionsV1beta1().Deployments(metav1.NamespaceAll)
 
@@ -275,6 +281,12 @@ loop:
 }
 
 func (v1 *Agent) watchStatefulHandler() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
 	tool.Log.Info("正在监听statefulset...")
 	statefulSetClient := v1.clientSet.AppsV1beta1().StatefulSets(metav1.NamespaceAll)
 
@@ -328,6 +340,12 @@ loop:
 }
 
 func (v1 *Agent) watchNodeHandler() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
 	tool.Log.Info("正在监听node...")
 	nodesClient := v1.clientSet.CoreV1().Nodes()
 

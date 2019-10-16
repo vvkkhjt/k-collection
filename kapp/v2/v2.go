@@ -221,6 +221,13 @@ func (v2 *Agent) startWatchNode() {
 
 // watch handler
 func (v2 *Agent) watchDepHandler() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
+
 	tool.Log.Info("正在监听deployment...")
 	deploymentsClient := v2.clientSet.AppsV1beta2().Deployments(metav1.NamespaceAll)
 
@@ -230,6 +237,7 @@ func (v2 *Agent) watchDepHandler() error {
 	timeoutSeconds := int64((15 * time.Minute).Seconds())
 	options := metav1.ListOptions{
 		TimeoutSeconds: &timeoutSeconds,
+		Watch: true,
 	}
 	w, _ := deploymentsClient.Watch(options)
 	defer w.Stop()
@@ -274,6 +282,12 @@ loop:
 }
 
 func (v2 *Agent) watchStatefulHandler() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
 	tool.Log.Info("正在监听statefulset...")
 	statefulSetClient := v2.clientSet.AppsV1beta2().StatefulSets(metav1.NamespaceAll)
 
@@ -283,6 +297,7 @@ func (v2 *Agent) watchStatefulHandler() error {
 	timeoutSeconds := int64((15 * time.Minute).Seconds())
 	options := metav1.ListOptions{
 		TimeoutSeconds: &timeoutSeconds,
+		Watch: true,
 	}
 	w, _ := statefulSetClient.Watch(options)
 	defer w.Stop()
@@ -327,6 +342,12 @@ loop:
 }
 
 func (v2 *Agent) watchNodeHandler() error {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
 	tool.Log.Info("正在监听node...")
 	nodesClient := v2.clientSet.CoreV1().Nodes()
 
@@ -336,6 +357,7 @@ func (v2 *Agent) watchNodeHandler() error {
 	timeoutSeconds := int64((15 * time.Minute).Seconds())
 	options := metav1.ListOptions{
 		TimeoutSeconds: &timeoutSeconds,
+		Watch: true,
 	}
 	w, _ := nodesClient.Watch(options)
 	defer w.Stop()
