@@ -2,6 +2,7 @@ package main
 
 import (
 	"kappagent/kapp"
+	"kappagent/util/tool"
 	"os"
 	"regexp"
 )
@@ -22,6 +23,12 @@ var (
 )
 
 func main() {
+	defer func() {
+		err := recover()
+		if err != nil {
+			tool.Log.Error(err)
+		}
+	}()
 	if cn := os.Getenv(envClusterName); cn != "" {
 		//panic("请填写集群名称")
 		clusterName = os.Getenv(envClusterName)

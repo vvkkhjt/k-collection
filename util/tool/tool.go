@@ -107,8 +107,8 @@ func newLogger() *logrus.Logger {
 		return Log
 	}
 	pathMap := lfshook.PathMap{
-		logrus.InfoLevel:  "../log/info.log",
-		logrus.ErrorLevel: "../log/error.log",
+		logrus.InfoLevel:  "./log/info.log",
+		logrus.ErrorLevel: "./log/error.log",
 	}
 	Log = logrus.New()
 	Log.Hooks.Add(lfshook.NewHook(
